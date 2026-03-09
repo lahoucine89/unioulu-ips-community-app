@@ -33,18 +33,23 @@ class LatestEventsWidgetState extends State<LatestEventsWidget> {
 
       if (!mounted) return;
 
-      final List<dynamic> jsonData = response['documents'];
+      if (response.containsKey('documents') && response['documents'] is List) {
+        final List<dynamic> jsonData = response['documents'];
 
-      // Sort by date if available
-      final sortedEvents = jsonData
-        ..sort((a, b) =>
-            DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
+        final sortedEvents = jsonData
+          ..sort((a, b) =>
+              DateTime.parse(b['date']).compareTo(DateTime.parse(a['date'])));
 
-      // Limit to 3 latest events
-      setState(() {
-        _events = sortedEvents.take(3).toList().cast<Map<String, dynamic>>();
-        _isLoading = false;
-      });
+        setState(() {
+          _events = sortedEvents.take(3).toList().cast<Map<String, dynamic>>();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -68,7 +73,6 @@ class LatestEventsWidgetState extends State<LatestEventsWidget> {
       return const Center(child: Text('No upcoming events.'));
     }
 
-    // Calculate card width once here
     final cardWidth = 300.0;
 
     return Column(
@@ -78,23 +82,22 @@ class LatestEventsWidgetState extends State<LatestEventsWidget> {
         Padding(
           padding: const EdgeInsets.only(
             top: AppSpacing.defaultPadding,
-            left: AppSpacing.smallPadding
+            left: AppSpacing.smallPadding,
           ),
           child: Text(
             'Latest Events',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-
         SizedBox(
-          height: 250, // Set an appropriate fixed height
+          height: 250,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.smallPadding,
-                vertical: AppSpacing.defaultPadding,
-                ),
+              horizontal: AppSpacing.smallPadding,
+              vertical: AppSpacing.defaultPadding,
+            ),
             itemCount: _events.length,
             itemBuilder: (context, index) {
               final event = EventModel.fromMap(_events[index]);
@@ -108,8 +111,12 @@ class LatestEventsWidgetState extends State<LatestEventsWidget> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.smallPadding),
-                  child: EventCard(event: event, width: cardWidth,),
+                  padding:
+                      const EdgeInsets.only(right: AppSpacing.smallPadding),
+                  child: EventCard(
+                    event: event,
+                    width: cardWidth,
+                  ),
                 ),
               );
             },

@@ -23,8 +23,13 @@ class AnnouncementsPageState extends State<AnnouncementsPage> {
     final response = await _appwriteService.listDocuments(
       collectionId: "announcements",
     );
-    final List<dynamic> jsonData = response['documents'];
-    return jsonData.map((json) => AnnouncementModel.fromJson(json)).toList();
+
+    if (response.containsKey('documents') && response['documents'] is List) {
+      final List<dynamic> jsonData = response['documents'];
+      return jsonData.map((json) => AnnouncementModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch announcements');
+    }
   }
 
   @override

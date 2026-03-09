@@ -13,6 +13,20 @@ class CommunityPostCard extends StatelessWidget {
     this.onLikePressed,
   });
 
+  /// Generate a different realistic avatar for each user
+  String _buildAvatarUrl(String name) {
+    int hash = name.hashCode.abs();
+    int index = hash % 100;
+
+    bool isMale = hash % 2 == 0;
+
+    if (isMale) {
+      return "https://randomuser.me/api/portraits/men/$index.jpg";
+    } else {
+      return "https://randomuser.me/api/portraits/women/$index.jpg";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -38,14 +52,15 @@ class CommunityPostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile section
+              /// Author section
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 28,
-                    backgroundImage:
-                        NetworkImage('https://thispersondoesnotexist.com'),
+                    backgroundImage: NetworkImage(
+                      _buildAvatarUrl(post.authorName),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -72,8 +87,10 @@ class CommunityPostCard extends StatelessWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 16),
-              // Post content
+
+              /// Post title
               Text(
                 post.postTitle,
                 style: const TextStyle(
@@ -81,15 +98,20 @@ class CommunityPostCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 8),
+
+              /// Post content
               Text(
                 post.content,
                 style: const TextStyle(
                   fontSize: 14,
                 ),
               ),
+
               const SizedBox(height: 16),
-              // Actions row
+
+              /// Actions row
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -100,9 +122,9 @@ class CommunityPostCard extends StatelessWidget {
                           post.isLiked ? Icons.favorite : Icons.favorite_border,
                           color: post.isLiked ? Colors.red : null,
                         ),
-                        onPressed: onLikePressed,  // Use the callback parameter
+                        onPressed: onLikePressed,
                       ),
-                      Text('${post.likeCount}'),  // Like count placeholder
+                      Text('${post.likeCount}'),
                     ],
                   ),
                   const SizedBox(width: AppSpacing.smallPadding),

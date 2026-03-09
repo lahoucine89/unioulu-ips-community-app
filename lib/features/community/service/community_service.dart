@@ -49,7 +49,6 @@ class CommunityService {
   }) async {
     List<String> queries = [];
 
-    // Add sorting query
     if (sortByLatest) {
       queries.add(Query.orderDesc('\$createdAt'));
     }
@@ -66,7 +65,6 @@ class CommunityService {
     if (response.containsKey('documents') && response['documents'] is List) {
       final documents = response['documents'] as List;
 
-      // Convert to PostModel objects
       final posts = documents
           .map((doc) {
             try {
@@ -81,22 +79,17 @@ class CommunityService {
           .whereType<PostModel>()
           .toList();
 
-      // Get all post IDs
       final postIds = posts.map((p) => p.id).toList();
 
-      // Fetch like counts for all posts at once
       final likeCounts = await getPostLikeCounts(postIds);
-      
-      // Fetch comment counts 
       final commentCounts = await getPostCommentCounts(postIds);
 
-      // Update posts with like counts and comment counts
       for (int i = 0; i < posts.length; i++) {
         final likeCount = likeCounts[posts[i].id] ?? 0;
-        final commentCount = commentCounts[posts[i].id] ?? 0; 
+        final commentCount = commentCounts[posts[i].id] ?? 0;
         posts[i] = posts[i].copyWith(
           likeCount: likeCount,
-          commentCount: commentCount, 
+          commentCount: commentCount,
         );
       }
 
@@ -132,7 +125,7 @@ class CommunityService {
     }
   }
 
-// Get comments for a post
+  // Get comments for a post
   Future<List<CommentModel>> getPostComments(String postId) async {
     try {
       final response = await _appwriteService.listDocuments(
@@ -165,7 +158,7 @@ class CommunityService {
     }
   }
 
-// Get like count for a post
+  // Get like count for a post
   Future<int> getPostLikeCount(String postId) async {
     try {
       final response = await _appwriteService.listDocuments(
@@ -185,7 +178,7 @@ class CommunityService {
     }
   }
 
-// Get posts liked by a user
+  // Get posts liked by a user
   Future<List<PostModel>> getUserLikedPosts(String userId) async {
     if (userId == 'anonymous') {
       developer.log('Anonymous user has no likes');
@@ -193,7 +186,6 @@ class CommunityService {
     }
 
     try {
-      // Step 1: Get all liked post IDs from the 'post_likes' collection
       final response = await _appwriteService.listDocuments(
         collectionId: 'post_likes',
         queries: [
@@ -209,18 +201,16 @@ class CommunityService {
           return [];
         }
 
-        // Extract the post IDs that the user has liked
-        final likedPostIds = postLikes.map((doc) => doc['postId']).toList();
+        final likedPostIds =
+            postLikes.map((doc) => doc['postId'].toString()).toList();
 
-        // Query the 'posts' collection to fetch the full post data for each liked post
         final postsResponse = await _appwriteService.listDocuments(
           collectionId: 'posts',
           queries: [
-            Query.contains('\$id', likedPostIds),
+            Query.equal('\$id', likedPostIds),
           ],
         );
 
-        // Parse and return the list of PostModel objects
         if (postsResponse.containsKey('documents') &&
             postsResponse['documents'] is List) {
           final posts = postsResponse['documents'] as List;
@@ -230,7 +220,7 @@ class CommunityService {
               .map((doc) {
                 try {
                   if (doc is Map<String, dynamic>) {
-                    return PostModel.fromMap(doc);
+                    return PostModel.fromMap(doc['data'] ?? doc);
                   }
                   return PostModel.fromMap(jsonDecode(jsonEncode(doc)));
                 } catch (e) {
@@ -254,7 +244,7 @@ class CommunityService {
     }
   }
 
-  // Lika a commment (create a like document)
+  // Like a comment (create a like document)
   Future<Map<String, dynamic>> likeComment(
       String userId, String commentId) async {
     if (userId == 'anonymous') {
@@ -309,10 +299,8 @@ class CommunityService {
       final response = await _appwriteService.listDocuments(
         collectionId: 'comment_likes',
         queries: [
-          Query.and([
-            Query.equal('commentId', commentId),
-            Query.equal('userId', userId),
-          ]),
+          Query.equal('commentId', commentId),
+          Query.equal('userId', userId),
         ],
       );
 
@@ -349,10 +337,8 @@ class CommunityService {
       final response = await _appwriteService.listDocuments(
         collectionId: 'post_likes',
         queries: [
-          Query.and([
-            Query.equal('postId', postId),
-            Query.equal('userId', userId),
-          ]),
+          Query.equal('postId', postId),
+          Query.equal('userId', userId),
         ],
       );
 
@@ -381,25 +367,28 @@ class CommunityService {
 
   Future<Map<String, int>> getCommentLikeCounts(List<String> commentIds) async {
     try {
-      // Create a map to hold counts
       Map<String, int> likeCounts = {};
 
-      // For each comment ID, initialize to 0
       for (final id in commentIds) {
         likeCounts[id] = 0;
       }
 
+      if (commentIds.isEmpty) {
+        return likeCounts;
+      }
+
       final response = await _appwriteService.listDocuments(
         collectionId: 'comment_likes',
+        queries: [
+          Query.equal('commentId', commentIds),
+        ],
       );
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
 
-        // Process all likes
         for (final like in likes) {
           final commentId = like['commentId'];
-
           if (likeCounts.containsKey(commentId)) {
             likeCounts[commentId] = (likeCounts[commentId] ?? 0) + 1;
           }
@@ -414,25 +403,28 @@ class CommunityService {
 
   Future<Map<String, int>> getPostLikeCounts(List<String> postIds) async {
     try {
-      // Create a map to hold counts
       Map<String, int> likeCounts = {};
 
-      // For each post ID, initialize to 0
       for (final id in postIds) {
         likeCounts[id] = 0;
       }
 
+      if (postIds.isEmpty) {
+        return likeCounts;
+      }
+
       final response = await _appwriteService.listDocuments(
         collectionId: 'post_likes',
+        queries: [
+          Query.equal('postId', postIds),
+        ],
       );
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
 
-        // Process all likes
         for (final like in likes) {
           final postId = like['postId'];
-
           if (likeCounts.containsKey(postId)) {
             likeCounts[postId] = (likeCounts[postId] ?? 0) + 1;
           }
@@ -449,20 +441,24 @@ class CommunityService {
     try {
       Map<String, int> commentCounts = {};
 
-      // Initialize all post IDs to 0
       for (final id in postIds) {
         commentCounts[id] = 0;
       }
 
-      // Fetch all comments and count them by postId
+      if (postIds.isEmpty) {
+        return commentCounts;
+      }
+
       final response = await _appwriteService.listDocuments(
         collectionId: 'comments',
+        queries: [
+          Query.equal('postId', postIds),
+        ],
       );
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final comments = response['documents'] as List;
 
-        // Count comments per post
         for (final comment in comments) {
           final postId = comment['postId'];
           if (commentCounts.containsKey(postId)) {
@@ -480,10 +476,12 @@ class CommunityService {
   // Get likes for a post
   Future<List<PostModel>> getPostLikes(String postId) async {
     try {
-      final response = await _appwriteService
-          .listDocuments(collectionId: 'post_likes', queries: [
-        Query.equal('\$id', postId),
-      ]);
+      final response = await _appwriteService.listDocuments(
+        collectionId: 'post_likes',
+        queries: [
+          Query.equal('postId', postId),
+        ],
+      );
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final documents = response['documents'] as List;
@@ -498,7 +496,7 @@ class CommunityService {
                 return null;
               }
             })
-            .whereType<PostModel>() // Filter out nulls
+            .whereType<PostModel>()
             .toList();
       } else {
         throw Exception('Failed to fetch likes: ${response.toString()}');
