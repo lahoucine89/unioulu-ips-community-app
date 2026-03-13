@@ -12,12 +12,68 @@ class CommunityService {
   CommunityService({required AppwriteService appwriteService})
       : _appwriteService = appwriteService;
 
-  // Vote on a poll
   Future<void> voteOnPoll(String postId, int optionIndex) async {
-    // TODO: Implement the voting logic
+    try {
+      final response = await _appwriteService.listDocuments(
+        collectionId: 'posts',
+        queries: [
+          Query.equal('\$id', postId),
+        ],
+      );
+
+      if (!response.containsKey('documents') ||
+          response['documents'] is! List ||
+          (response['documents'] as List).isEmpty) {
+        throw Exception('Post not found');
+      }
+
+      final document = (response['documents'] as List).first;
+      final rawPollOptions = document['pollOptions'];
+
+      List<dynamic> pollOptions = [];
+
+      if (rawPollOptions is String && rawPollOptions.isNotEmpty) {
+        final decoded = jsonDecode(rawPollOptions);
+        if (decoded is List) {
+          pollOptions = List<dynamic>.from(decoded);
+        } else {
+          throw Exception('Invalid poll options format');
+        }
+      } else if (rawPollOptions is List) {
+        pollOptions = List<dynamic>.from(rawPollOptions);
+      } else {
+        throw Exception('Poll options not found in post');
+      }
+
+      final updatedPollOptions = pollOptions.asMap().entries.map((entry) {
+        final index = entry.key;
+        final option = Map<String, dynamic>.from(entry.value as Map);
+
+        if (index == optionIndex) {
+          final currentVotes = (option['votes'] ?? 0) as int;
+          option['votes'] = currentVotes + 1;
+        }
+
+        return option;
+      }).toList();
+
+      final updateResponse = await _appwriteService.updateDocument(
+        collectionId: 'posts',
+        documentId: document['\$id'],
+        data: {
+          'pollOptions': jsonEncode(updatedPollOptions),
+        },
+      );
+
+      if (updateResponse.statusCode != 200 &&
+          updateResponse.statusCode != 201) {
+        throw Exception('Failed to store vote: ${updateResponse.body}');
+      }
+    } catch (e) {
+      throw Exception('Failed to vote on poll: $e');
+    }
   }
 
-  // get users liked commentIds
   Future<List<dynamic>> getUserLikedCommentIds(String userId) async {
     if (userId == 'anonymous') {
       developer.log('Anonymous user has no likes');
@@ -72,7 +128,7 @@ class CommunityService {
                 return PostModel.fromMap(doc['data'] ?? doc);
               }
               return null;
-            } catch (e) {
+            } catch (_) {
               return null;
             }
           })
@@ -99,7 +155,6 @@ class CommunityService {
     }
   }
 
-  // Add a comment to a post
   Future<CommentModel> addComment(
       String postId, String text, String username) async {
     if (username == 'anonymous') {
@@ -125,7 +180,6 @@ class CommunityService {
     }
   }
 
-  // Get comments for a post
   Future<List<CommentModel>> getPostComments(String postId) async {
     try {
       final response = await _appwriteService.listDocuments(
@@ -144,7 +198,7 @@ class CommunityService {
                   return CommentModel.fromMap(doc['data'] ?? doc);
                 }
                 return null;
-              } catch (e) {
+              } catch (_) {
                 return null;
               }
             })
@@ -158,7 +212,6 @@ class CommunityService {
     }
   }
 
-  // Get like count for a post
   Future<int> getPostLikeCount(String postId) async {
     try {
       final response = await _appwriteService.listDocuments(
@@ -178,7 +231,6 @@ class CommunityService {
     }
   }
 
-  // Get posts liked by a user
   Future<List<PostModel>> getUserLikedPosts(String userId) async {
     if (userId == 'anonymous') {
       developer.log('Anonymous user has no likes');
@@ -244,7 +296,6 @@ class CommunityService {
     }
   }
 
-  // Like a comment (create a like document)
   Future<Map<String, dynamic>> likeComment(
       String userId, String commentId) async {
     if (userId == 'anonymous') {
@@ -267,7 +318,6 @@ class CommunityService {
     }
   }
 
-  // Like a post (create a like document)
   Future<Map<String, dynamic>> likePost(String userId, String postId) async {
     if (userId == 'anonymous') {
       throw Exception('Anonymous users cannot like posts');
@@ -289,7 +339,6 @@ class CommunityService {
     }
   }
 
-  // Unlike a comment (delete a like document)
   Future<void> unlikeComment(String userId, String commentId) async {
     if (userId == 'anonymous') {
       throw Exception('Anonymous users cannot unlike comments');
@@ -327,7 +376,6 @@ class CommunityService {
     }
   }
 
-  // Unlike a post (delete a like document)
   Future<void> unlikePost(String userId, String postId) async {
     if (userId == 'anonymous') {
       throw Exception('Anonymous users cannot unlike posts');
@@ -368,14 +416,11 @@ class CommunityService {
   Future<Map<String, int>> getCommentLikeCounts(List<String> commentIds) async {
     try {
       Map<String, int> likeCounts = {};
-
       for (final id in commentIds) {
         likeCounts[id] = 0;
       }
 
-      if (commentIds.isEmpty) {
-        return likeCounts;
-      }
+      if (commentIds.isEmpty) return likeCounts;
 
       final response = await _appwriteService.listDocuments(
         collectionId: 'comment_likes',
@@ -386,7 +431,6 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
-
         for (final like in likes) {
           final commentId = like['commentId'];
           if (likeCounts.containsKey(commentId)) {
@@ -404,14 +448,11 @@ class CommunityService {
   Future<Map<String, int>> getPostLikeCounts(List<String> postIds) async {
     try {
       Map<String, int> likeCounts = {};
-
       for (final id in postIds) {
         likeCounts[id] = 0;
       }
 
-      if (postIds.isEmpty) {
-        return likeCounts;
-      }
+      if (postIds.isEmpty) return likeCounts;
 
       final response = await _appwriteService.listDocuments(
         collectionId: 'post_likes',
@@ -422,7 +463,6 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
-
         for (final like in likes) {
           final postId = like['postId'];
           if (likeCounts.containsKey(postId)) {
@@ -440,14 +480,11 @@ class CommunityService {
   Future<Map<String, int>> getPostCommentCounts(List<String> postIds) async {
     try {
       Map<String, int> commentCounts = {};
-
       for (final id in postIds) {
         commentCounts[id] = 0;
       }
 
-      if (postIds.isEmpty) {
-        return commentCounts;
-      }
+      if (postIds.isEmpty) return commentCounts;
 
       final response = await _appwriteService.listDocuments(
         collectionId: 'comments',
@@ -458,7 +495,6 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final comments = response['documents'] as List;
-
         for (final comment in comments) {
           final postId = comment['postId'];
           if (commentCounts.containsKey(postId)) {
@@ -473,7 +509,6 @@ class CommunityService {
     }
   }
 
-  // Get likes for a post
   Future<List<PostModel>> getPostLikes(String postId) async {
     try {
       final response = await _appwriteService.listDocuments(
@@ -492,7 +527,7 @@ class CommunityService {
                   return PostModel.fromMap(doc['data'] ?? doc);
                 }
                 return null;
-              } catch (e) {
+              } catch (_) {
                 return null;
               }
             })

@@ -1,7 +1,7 @@
 name: community
 description: "A community app"
 
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -28,44 +28,33 @@ dependencies:
   intl: 0.20.2
   isar: ^3.1.0+1
   isar_flutter_libs:
-    git: 
-    # Using this patch library to fix the issue with isar_flutter_libs. v4 is supposed to fix this issue but it is not released yet.
+    git:
       url: https://github.com/MrLittleWhite/isar_flutter_libs.git
   path_provider: ^2.1.5
   share_plus: ^12.0.0
   speech_to_text: ^7.0.0
   emoji_picker_flutter: ^4.3.0
-  
   uni_links3: ^0.5.3
 
-# Since appwrite has an outdated dependency that doesn't work with gradle build on flutter_web_auth, we need to override it to use the latest version.
-# This is a temporary fix until appwrite updates their dependency.
-dependency_overrides:
-    flutter_web_auth_2: ^4.1.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
 
+dependency_overrides:
+  flutter_web_auth_2: ^4.1.0
 
 dev_dependencies:
-  # Code generation
   build_runner: ^2.4.13
-
-  # Linting
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
   mockito: ^5.4.4
   mocktail: ^1.0.4
-
-  # Code generation for Isar
   isar_generator: ^3.1.0+1
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-# The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
   generate: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
     - assets/icons/

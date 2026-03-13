@@ -46,13 +46,31 @@ class PostModel {
               .map((c) => CommentModel.fromMap(c as Map<String, dynamic>))
               .toList();
         }
-      } catch (e) {
-        // Handle or log decoding error if necessary
-        print('Error decoding comments string: $e');
-      }
+      } catch (_) {}
     }
 
-    List<PollOption> pollOptionsList = PollOption.fromString(json['pollOptions'] as String? ?? '');
+    List<PollOption> pollOptionsList = [];
+    final rawPollOptions = json['pollOptions'];
+
+    if (rawPollOptions is List) {
+      pollOptionsList = rawPollOptions
+          .map((e) => PollOption.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } else if (rawPollOptions is String && rawPollOptions.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawPollOptions);
+        if (decoded is List) {
+          pollOptionsList = decoded
+              .map((e) =>
+                  PollOption.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList();
+        } else {
+          pollOptionsList = PollOption.fromString(rawPollOptions);
+        }
+      } catch (_) {
+        pollOptionsList = PollOption.fromString(rawPollOptions);
+      }
+    }
 
     return PostModel(
       id: json['\$id'] as String,
@@ -62,8 +80,8 @@ class PostModel {
       content: json['content'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
       pollQuestion: json['pollQuestion'] as String? ?? '',
-      comments: commentsList, // Use the processed list
-      pollOptions: pollOptionsList, // Use the processed list
+      comments: commentsList,
+      pollOptions: pollOptionsList,
       isLiked: json['isLiked'] as bool? ?? false,
       likeCount: json['likeCount'] as int? ?? 0,
       commentCount: json['commentCount'] as int? ?? 0,
@@ -79,20 +97,19 @@ class PostModel {
       'imageUrl': imageUrl,
       'pollQuestion': pollQuestion,
       'comments': comments.map((c) => c.toJson()).toList(),
-      'pollOptions': pollOptions.map((o) => o.toJson()).toList(),
+      'pollOptions': jsonEncode(pollOptions.map((o) => o.toJson()).toList()),
       'isLiked': isLiked,
       'likeCount': likeCount,
+      'commentCount': commentCount,
     };
   }
 
-  /// Increment vote count for poll option at [index].
   void updateVote(int index) {
     if (index >= 0 && index < pollOptions.length) {
       pollOptions[index].votes++;
     }
   }
 
-  // In copyWith method, add:
   PostModel copyWith({
     String? id,
     String? authorName,

@@ -40,13 +40,19 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
 
         await _communityService.voteOnPoll(event.postId, event.optionIndex);
 
+        final updatedPollOptions =
+            post.pollOptions.asMap().entries.map((entry) {
+          final index = entry.key;
+          final option = entry.value;
+
+          if (index == event.optionIndex) {
+            return option.copyWith(votes: option.votes + 1);
+          }
+          return option;
+        }).toList();
+
         final updatedPost = post.copyWith(
-          pollOptions: post.pollOptions.map((option) {
-            if (option.option == event.optionIndex) {
-              return option.copyWith(votes: option.votes + 1);
-            }
-            return option;
-          }).toList(),
+          pollOptions: updatedPollOptions,
         );
 
         emit(PostLoaded(
@@ -302,7 +308,6 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
     } catch (e) {
       emit(CommunityError(
           message: 'Failed to toggle comment like: ${e.toString()}'));
-      return;
     }
   }
 

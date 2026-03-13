@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/services/http_appwrite_service.dart';
 import '../../../../core/utils/config.dart';
-import 'dart:convert';
 
 class CommunityPostForm extends StatefulWidget {
   const CommunityPostForm({super.key});
@@ -35,10 +37,7 @@ class CommunityPostFormState extends State<CommunityPostForm> {
   }
 
   Future<void> _pickImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null) {
       setState(() {
         _selectedImage = File(result.files.single.path!);
@@ -56,7 +55,7 @@ class CommunityPostFormState extends State<CommunityPostForm> {
     );
 
     final fileId = response['\$id'];
-    return '${appwriteService.endpoint}/storage/buckets/storage/files/$fileId/view?project=$appwriteProjectId&mode=admin';
+    return '${appwriteService.endpoint}/storage/buckets/$appwriteBucketId/files/$fileId/view?project=$appwriteProjectId&mode=admin';
   }
 
   void _addPollOption() {
@@ -79,7 +78,6 @@ class CommunityPostFormState extends State<CommunityPostForm> {
 
         final appwriteService = AppwriteService();
 
-        // Upload Image and get URL
         final imageUrl = await _uploadImage(appwriteService);
         if (!mounted) return;
 
@@ -90,8 +88,7 @@ class CommunityPostFormState extends State<CommunityPostForm> {
           return;
         }
 
-        // Prepare poll options correctly
-        List<Map<String, dynamic>> formattedPollOptions = _pollOptions
+        final formattedPollOptions = _pollOptions
             .map((option) => {'option': option, 'votes': 0})
             .toList();
 
@@ -102,22 +99,18 @@ class CommunityPostFormState extends State<CommunityPostForm> {
           'authorName': _authorNameController.text,
           'authorTitle': _authorTitleController.text,
           'pollQuestion': _pollQuestionController.text,
-          'pollOptions': formattedPollOptions.toString(),
+          'pollOptions': jsonEncode(formattedPollOptions),
         };
 
-        print('Data being sent to Appwrite: ${jsonEncode(dataObj)}');
-
-        final response = await appwriteService.createDocument(
+        await appwriteService.createDocument(
           collectionId: "posts",
-          data: {"data": dataObj, "documentId": 'unique()'},
+          data: dataObj,
           documentId: 'unique()',
         );
-        print('Document created: ${response['\$id']}');
 
         if (!mounted) return;
 
         ScaffoldMessenger.of(currentContext).clearSnackBars();
-
         ScaffoldMessenger.of(currentContext).showSnackBar(
           const SnackBar(content: Text('Post added successfully!')),
         );
@@ -157,48 +150,34 @@ class CommunityPostFormState extends State<CommunityPostForm> {
               TextFormField(
                 controller: _postTitleController,
                 decoration: const InputDecoration(labelText: 'Post Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a post title';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter a post title'
+                    : null,
               ),
               TextFormField(
                 controller: _contentController,
                 decoration: const InputDecoration(labelText: 'Content'),
                 maxLines: 4,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter content for the post';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter content for the post'
+                    : null,
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _authorNameController,
                 decoration: const InputDecoration(labelText: 'Author Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the author name';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter the author name'
+                    : null,
               ),
               TextFormField(
                 controller: _authorTitleController,
                 decoration: const InputDecoration(labelText: 'Author Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the author title';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter the author title'
+                    : null,
               ),
               const SizedBox(height: 20),
-
-              // Poll Question Field with space
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: TextFormField(
@@ -211,16 +190,11 @@ class CommunityPostFormState extends State<CommunityPostForm> {
                         EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     border: OutlineInputBorder(),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a poll question';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Please enter a poll question'
+                      : null,
                 ),
               ),
-
-              // Poll Option Field with space
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: TextFormField(
@@ -233,45 +207,43 @@ class CommunityPostFormState extends State<CommunityPostForm> {
                   ),
                 ),
               ),
-
-              // Add Poll Option button with space
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   onPressed: _addPollOption,
                   style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all(Colors.blueAccent),
+                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
                   ),
-                  child: const Text('Add Poll Option',
-                      style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'Add Poll Option',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-
-              // Display Poll Options with space
               if (_pollOptions.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Poll Options:',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Poll Options:',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 10),
                     ..._pollOptions.map((option) {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 10),
                         elevation: 5,
-                        shadowColor: Colors.grey.withValues(alpha: 0.2),
                         child: ListTile(
-                          title: Text(option, style: TextStyle(fontSize: 16)),
-                          trailing:
-                              Icon(Icons.check_circle, color: Colors.green),
+                          title: Text(option,
+                              style: const TextStyle(fontSize: 16)),
+                          trailing: const Icon(Icons.check_circle,
+                              color: Colors.green),
                         ),
                       );
                     }),
                   ],
                 ),
-
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,

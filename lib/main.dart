@@ -70,17 +70,13 @@ Future<void> _initializeDatabase() async {
 }
 
 void _initializeAppwrite() {
-  WidgetsFlutterBinding.ensureInitialized();
   final client = Client()
     ..setEndpoint(appwriteEndpoint)
-    ..setProject(appwriteProjectId)
-    ..setSelfSigned(status: true); // Only for development
+    ..setProject(appwriteProjectId);
 
-  // Register Client and Databases as Singletons
   locator.registerSingleton<Client>(client);
   locator.registerSingleton<Account>(Account(client));
-  locator
-      .registerSingleton<Databases>(Databases(client)); // Registering Databases
+  locator.registerSingleton<Databases>(Databases(client));
 }
 
 class MyApp extends StatefulWidget {
@@ -97,7 +93,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Initialize BLoCs without events first
     _themeBloc = ThemeBloc(
       getTheme: locator<GetTheme>(),
       setTheme: locator<SetTheme>(),
@@ -108,7 +103,6 @@ class _MyAppState extends State<MyApp> {
       getSavedLanguage: locator<GetSavedLanguage>(),
     );
 
-    // Defer BLoC event initialization to after first frame to avoid render loop
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _themeBloc.add(LoadThemeEvent());
@@ -129,10 +123,11 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) => CommunityBloc(
-                  communityService: locator<CommunityService>(),
-                  authRepository: locator<AuthRepositoryImpl>(),
-                )),
+          create: (context) => CommunityBloc(
+            communityService: locator<CommunityService>(),
+            authRepository: locator<AuthRepositoryImpl>(),
+          ),
+        ),
         BlocProvider.value(value: _themeBloc),
         BlocProvider.value(value: _localizationBloc),
         BlocProvider(
@@ -147,8 +142,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => SurveyBloc(
-              authRepository: locator<AuthRepositoryImpl>(),
-              service: locator<SurveyService>()),
+            authRepository: locator<AuthRepositoryImpl>(),
+            service: locator<SurveyService>(),
+          ),
         ),
         BlocProvider(
           create: (context) => EventsBloc(
@@ -157,8 +153,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         BlocProvider(
-          create: (context) =>
-              MoreBloc(locator<Account>()), // Add MoreBloc here
+          create: (context) => MoreBloc(locator<Account>()),
         ),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
@@ -167,6 +162,7 @@ class _MyAppState extends State<MyApp> {
           if (state is ThemeLoaded && state.theme == AppTheme.dark) {
             themeData = AppThemeData.darkTheme;
           }
+
           return MaterialApp(
             navigatorKey: appNavigatorKey,
             debugShowCheckedModeBanner: false,

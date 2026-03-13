@@ -80,9 +80,11 @@ void _registerAuthDependencies() {
   locator.registerLazySingleton<Logout>(() => Logout(authRepository));
   locator.registerLazySingleton<Register>(() => Register(authRepository));
   locator.registerLazySingleton<UpdateProfile>(
-      () => UpdateProfile(authRepository));
+    () => UpdateProfile(authRepository),
+  );
   locator.registerLazySingleton<AuthenticateAnonymous>(
-      () => AuthenticateAnonymous(authRepository));
+    () => AuthenticateAnonymous(authRepository),
+  );
 }
 
 void _registerCommonServices() {
@@ -90,7 +92,9 @@ void _registerCommonServices() {
 
   locator.registerLazySingleton<EventRepository>(() => EventRepository());
   locator.registerLazySingleton<CommunityService>(
-      () => CommunityService(appwriteService: locator<AppwriteService>()));
+    () => CommunityService(appwriteService: locator<AppwriteService>()),
+  );
   locator.registerLazySingleton<SurveyService>(
-      () => SurveyService(appwriteService: locator<AppwriteService>()));
+    () => SurveyService(appwriteService: locator<AppwriteService>()),
+  );
 }

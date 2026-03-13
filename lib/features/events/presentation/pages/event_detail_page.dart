@@ -7,10 +7,13 @@ import 'package:community/features/events/repository/event_repository.dart';
 import 'package:community/features/surveys/presentation/pages/survey_intro_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/models/event_model.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../../data/models/event_model.dart';
 import '../bloc/events_state.dart';
-import 'package:community/main.dart' show locator; // Import locator directly
+import 'package:community/main.dart' show locator;
 
 Future<void> _loadEvents(BuildContext context) async {
   try {
@@ -23,20 +26,24 @@ Future<void> _loadEvents(BuildContext context) async {
       developer.log('Loading events from EventLayout with userId: $userId');
     } catch (e) {
       developer.log('Error getting user ID: ${e.toString()}');
-      userId = 'anonymous'; // Fallback to anonymous if we can't get userId
+      userId = 'anonymous';
     }
 
     eventsBloc.add(FetchEvents(userId: userId));
   } catch (e) {
-    developer
-        .log('Critical error loading events from EventLayout: ${e.toString()}');
-    // Always try to load anonymous events as a last resort
+    developer.log(
+      'Critical error loading events from EventLayout: ${e.toString()}',
+    );
   }
 }
 
 class EventDetailsPage extends StatelessWidget {
   final EventModel event;
-  const EventDetailsPage({super.key, required this.event});
+
+  const EventDetailsPage({
+    super.key,
+    required this.event,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +58,7 @@ class EventDetailsPage extends StatelessWidget {
         }
       },
       child: DefaultTabController(
-        length: 3, // Info, Ticket, Location
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -65,32 +72,24 @@ class EventDetailsPage extends StatelessWidget {
             backgroundColor: Theme.of(context).primaryColor,
             title: Text(
               'Event Details',
-              style:
-                  TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
+              style: TextStyle(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
             ),
             iconTheme: IconThemeData(
-              color: Theme.of(context)
-                  .scaffoldBackgroundColor, // Change back arrow color
+              color: Theme.of(context).scaffoldBackgroundColor,
             ),
             bottom: TabBar(
-              // Add indicator for the active tab
               indicator: BoxDecoration(
-                color: Theme.of(context)
-                    .scaffoldBackgroundColor, // Active tab background color
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
               ),
-              // Style for unselected tabs
-              unselectedLabelColor: Colors.white70, // Inactive tab text color
-              labelColor:
-                  Theme.of(context).primaryColor, // Active tab text color
-
-              // Remove the default indicator
+              unselectedLabelColor: Colors.white70,
+              labelColor: Theme.of(context).primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
-
-              // Tab background color (for all tabs)
               labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               tabs: const [
                 Tab(text: 'Info'),
@@ -101,10 +100,8 @@ class EventDetailsPage extends StatelessWidget {
           ),
           body: Column(
             children: [
-              // The static event image placed outside the TabBarView
               EventLayout(event: event),
-              // Tab content occupies the rest of the space
-                            Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: CustomButton(
                   text: 'Take Survey',
@@ -112,7 +109,8 @@ class EventDetailsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SurveyIntroPage(eventId: event.remoteId),
+                        builder: (context) =>
+                            SurveyIntroPage(eventId: event.remoteId),
                       ),
                     );
                   },
@@ -121,107 +119,9 @@ class EventDetailsPage extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    // Info Tab
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            event.titleEn,
-                            style: const TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on, size: 16),
-                              const SizedBox(width: 4.0),
-                              Text(event.locationEn),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today, size: 16),
-                              const SizedBox(width: 4.0),
-                              Text('${event.date} | ${event.time}'),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.money, size: 16),
-                              const SizedBox(width: 4.0),
-                              Text(event.price),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.person, size: 16),
-                              const SizedBox(width: 4.0),
-                              Text(event.organizerName),
-                            ],
-                          ),
-                          const SizedBox(height: 16.0),
-                          const Text(
-                            'Details',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(event.detailsEn),
-                        ],
-                      ),
-                    ),
-                    // Ticket Tab
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Ticket Information',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(event.ticketDetailsEn),
-                        ],
-                      ),
-                    ),
-                    // Location Tab
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Location',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on),
-                              const SizedBox(width: 8.0),
-                              Expanded(child: Text(event.locationEn)),
-                            ],
-                          ),
-                          // Additional location content can be added here.
-                        ],
-                      ),
-                    ),
+                    _InfoTab(event: event),
+                    _TicketTab(event: event),
+                    _LocationTab(event: event),
                   ],
                 ),
               ),
@@ -233,9 +133,244 @@ class EventDetailsPage extends StatelessWidget {
   }
 }
 
+class _InfoTab extends StatelessWidget {
+  final EventModel event;
+
+  const _InfoTab({
+    required this.event,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            event.titleEn,
+            style: const TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              const Icon(Icons.location_on, size: 16),
+              const SizedBox(width: 4.0),
+              Expanded(
+                child: Text(event.locationEn),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              const Icon(Icons.calendar_today, size: 16),
+              const SizedBox(width: 4.0),
+              Expanded(
+                child: Text('${event.date} | ${event.time}'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              const Icon(Icons.money, size: 16),
+              const SizedBox(width: 4.0),
+              Expanded(
+                child: Text(event.price),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              const Icon(Icons.person, size: 16),
+              const SizedBox(width: 4.0),
+              Expanded(
+                child: Text(event.organizerName),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16.0),
+          const Text(
+            'Details',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(event.detailsEn),
+        ],
+      ),
+    );
+  }
+}
+
+class _TicketTab extends StatelessWidget {
+  final EventModel event;
+
+  const _TicketTab({
+    required this.event,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Ticket Information',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(event.ticketDetailsEn),
+        ],
+      ),
+    );
+  }
+}
+
+class _LocationTab extends StatelessWidget {
+  final EventModel event;
+
+  const _LocationTab({
+    required this.event,
+  });
+
+  static const LatLng _universityOfOulu = LatLng(65.0597, 25.4668);
+  static const LatLng _sportsCenter = LatLng(65.0609, 25.4705);
+  static const LatLng _kontinkangasCampus = LatLng(65.0019, 25.5108);
+  static const LatLng _linnanmaaCampus = LatLng(65.0597, 25.4668);
+
+  LatLng _resolveCoordinates() {
+    final location = event.locationEn.toLowerCase();
+
+    if (location.contains('sports center') || location.contains('sports')) {
+      return _sportsCenter;
+    }
+
+    if (location.contains('kontinkangas')) {
+      return _kontinkangasCampus;
+    }
+
+    if (location.contains('linnanmaa')) {
+      return _linnanmaaCampus;
+    }
+
+    if (location.contains('university of oulu')) {
+      return _universityOfOulu;
+    }
+
+    return _universityOfOulu;
+  }
+
+  String _resolveLocationTitle() {
+    if (event.locationEn.trim().isNotEmpty) {
+      return event.locationEn;
+    }
+    return 'University of Oulu';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mapPoint = _resolveCoordinates();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Location',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              const Icon(Icons.location_on),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: Text(_resolveLocationTitle()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16.0),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: 260,
+              width: double.infinity,
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: mapPoint,
+                  initialZoom: 15,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all,
+                  ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.community',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: mapPoint,
+                        width: 40,
+                        height: 40,
+                        child: const Icon(
+                          Icons.location_pin,
+                          size: 40,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12.0),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              'Interactive map centered on ${_resolveLocationTitle()}. '
+              'For exact event-by-event map positions, the backend should store latitude and longitude for each event.',
+              style: const TextStyle(fontSize: 13.5),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class EventLayout extends StatefulWidget {
   final EventModel event;
-  const EventLayout({super.key, required this.event});
+
+  const EventLayout({
+    super.key,
+    required this.event,
+  });
 
   @override
   EventLayoutState createState() => EventLayoutState();
@@ -250,7 +385,6 @@ class EventLayoutState extends State<EventLayout> {
     _fetchLikeCount();
   }
 
-  // TODO: Move logic to bloc
   Future<void> _fetchLikeCount() async {
     try {
       final eventService = EventRepository();
@@ -293,6 +427,18 @@ class EventLayoutState extends State<EventLayout> {
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: double.infinity,
+                      height: 200,
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 48,
+                      ),
+                    );
+                  },
                 ),
               ),
               Padding(
@@ -306,10 +452,9 @@ class EventLayoutState extends State<EventLayout> {
                       onPressed: () {
                         final String shareText =
                             'Check out this event: ${widget.event.titleEn}\n'
-                            '📍 Location: ${widget.event.locationEn}\n'
-                            '📅 Date: ${widget.event.date} | 🕒 Time: ${widget.event.time}\n'
-                            '💰 Price: ${widget.event.price}\n'
-                            '🔗 More details: [Event Link Here]'; // Replace with actual link
+                            'Location: ${widget.event.locationEn}\n'
+                            'Date: ${widget.event.date} | Time: ${widget.event.time}\n'
+                            'Price: ${widget.event.price}';
 
                         Share.share(shareText);
                       },
@@ -327,26 +472,28 @@ class EventLayoutState extends State<EventLayout> {
   }
 
   Widget _buildFavoriteButton(BuildContext context, EventsState state) {
-    // Check if the event is favorited
     final bool isFavorite = state is EventsLoaded &&
         state.favorites.contains(widget.event.remoteId);
 
     return TextButton.icon(
       onPressed: () {
-        // Check if state is loaded before toggling
         if (state is! EventsLoaded) {
           developer.log('State is not EventsLoaded, loading events first');
           _loadEvents(context);
-          return; // Add return to prevent action until loaded
+          return;
         }
 
         developer.log(
-            'Attempting to toggle favorite for event: ${widget.event.remoteId}');
+          'Attempting to toggle favorite for event: ${widget.event.remoteId}',
+        );
+
         context.read<EventsBloc>().add(
               ToggleFavorite(eventId: widget.event.remoteId),
             );
 
-        _likeCount += isFavorite ? -1 : 1;
+        setState(() {
+          _likeCount += isFavorite ? -1 : 1;
+        });
       },
       icon: Icon(
         isFavorite ? Icons.favorite : Icons.favorite_border,
