@@ -6,8 +6,9 @@ class CommentModel {
   final DateTime dateTime;
   final bool isLiked;
   final int likeCount;
+  final String? parentCommentId;
 
-  CommentModel({
+  const CommentModel({
     required this.id,
     required this.postId,
     required this.text,
@@ -15,7 +16,11 @@ class CommentModel {
     required this.dateTime,
     this.isLiked = false,
     this.likeCount = 0,
+    this.parentCommentId,
   });
+
+  bool get isReply =>
+      parentCommentId != null && parentCommentId!.trim().isNotEmpty;
 
   Map<String, dynamic> toJson() {
     return {
@@ -25,18 +30,26 @@ class CommentModel {
       'dateTime': dateTime.toIso8601String(),
       'isLiked': isLiked,
       'likeCount': likeCount,
+      'parentCommentId': parentCommentId,
     };
   }
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
+    final rawParentId = map['parentCommentId'];
+
     return CommentModel(
-      id: map['\$id'] ?? '',
+      id: map['\$id'] ?? map['id'] ?? '',
       postId: map['postId'] ?? '',
       text: map['text'] ?? '',
       username: map['username'] ?? 'Anonymous',
-      dateTime: DateTime.parse(map['dateTime']),
+      dateTime: DateTime.tryParse(map['dateTime']?.toString() ?? '') ??
+          DateTime.now(),
       isLiked: map['isLiked'] ?? false,
       likeCount: map['likeCount'] ?? 0,
+      parentCommentId:
+          rawParentId == null || rawParentId.toString().trim().isEmpty
+              ? null
+              : rawParentId.toString(),
     );
   }
 
@@ -48,6 +61,8 @@ class CommentModel {
     DateTime? dateTime,
     bool? isLiked,
     int? likeCount,
+    String? parentCommentId,
+    bool clearParentCommentId = false,
   }) {
     return CommentModel(
       id: id ?? this.id,
@@ -57,6 +72,9 @@ class CommentModel {
       dateTime: dateTime ?? this.dateTime,
       isLiked: isLiked ?? this.isLiked,
       likeCount: likeCount ?? this.likeCount,
+      parentCommentId: clearParentCommentId
+          ? null
+          : (parentCommentId ?? this.parentCommentId),
     );
   }
 }

@@ -103,7 +103,7 @@ class CommunityService {
     int? limit = 50,
     bool sortByLatest = true,
   }) async {
-    List<String> queries = [];
+    final List<String> queries = [];
 
     if (sortByLatest) {
       queries.add(Query.orderDesc('\$createdAt'));
@@ -114,7 +114,7 @@ class CommunityService {
     }
 
     final response = await _appwriteService.listDocuments(
-      collectionId: "posts",
+      collectionId: 'posts',
       queries: queries,
     );
 
@@ -143,6 +143,7 @@ class CommunityService {
       for (int i = 0; i < posts.length; i++) {
         final likeCount = likeCounts[posts[i].id] ?? 0;
         final commentCount = commentCounts[posts[i].id] ?? 0;
+
         posts[i] = posts[i].copyWith(
           likeCount: likeCount,
           commentCount: commentCount,
@@ -156,22 +157,35 @@ class CommunityService {
   }
 
   Future<CommentModel> addComment(
-      String postId, String text, String username) async {
-    if (username == 'anonymous') {
+    String postId,
+    String text,
+    String username,
+    String userId, {
+    String? parentCommentId,
+  }) async {
+    if (username == 'anonymous' || userId == 'anonymous') {
       throw Exception('Anonymous users cannot add comments');
     }
 
     try {
+      final Map<String, dynamic> data = {
+        'postId': postId,
+        'text': text,
+        'username': username,
+        'userId': userId,
+        'dateTime': DateTime.now().toIso8601String(),
+      };
+
+      if (parentCommentId != null && parentCommentId.trim().isNotEmpty) {
+        data['parentCommentId'] = parentCommentId;
+      }
+
       final response = await _appwriteService.createDocument(
         collectionId: 'comments',
-        data: {
-          'postId': postId,
-          'text': text,
-          'username': username,
-          'dateTime': DateTime.now().toIso8601String(),
-        },
+        data: data,
         documentId: 'unique()',
       );
+
       return response.containsKey('data')
           ? CommentModel.fromMap(response['data'])
           : CommentModel.fromMap(response);
@@ -186,11 +200,13 @@ class CommunityService {
         collectionId: 'comments',
         queries: [
           Query.equal('postId', postId),
+          Query.orderAsc('dateTime'),
         ],
       );
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final documents = response['documents'] as List;
+
         return documents
             .map((doc) {
               try {
@@ -266,7 +282,6 @@ class CommunityService {
         if (postsResponse.containsKey('documents') &&
             postsResponse['documents'] is List) {
           final posts = postsResponse['documents'] as List;
-          developer.log('Successfully fetched ${posts.length} posts');
 
           return posts
               .map((doc) {
@@ -275,20 +290,17 @@ class CommunityService {
                     return PostModel.fromMap(doc['data'] ?? doc);
                   }
                   return PostModel.fromMap(jsonDecode(jsonEncode(doc)));
-                } catch (e) {
-                  developer.log('Error parsing post document: $e');
+                } catch (_) {
                   return null;
                 }
               })
               .whereType<PostModel>()
               .toList();
         } else {
-          developer.log('No posts found for liked post IDs');
           return [];
         }
       }
 
-      developer.log('No liked posts found or invalid response format');
       return [];
     } catch (e) {
       developer.log('Failed to get liked posts: ${e.toString()}');
@@ -297,7 +309,9 @@ class CommunityService {
   }
 
   Future<Map<String, dynamic>> likeComment(
-      String userId, String commentId) async {
+    String userId,
+    String commentId,
+  ) async {
     if (userId == 'anonymous') {
       throw Exception('Anonymous users cannot like comments');
     }
@@ -369,7 +383,8 @@ class CommunityService {
         );
       } else {
         throw Exception(
-            'Failed to fetch like document: ${response.toString()}');
+          'Failed to fetch like document: ${response.toString()}',
+        );
       }
     } catch (e) {
       throw Exception('Failed to unlike comment: $e');
@@ -406,7 +421,8 @@ class CommunityService {
         );
       } else {
         throw Exception(
-            'Failed to fetch like document: ${response.toString()}');
+          'Failed to fetch like document: ${response.toString()}',
+        );
       }
     } catch (e) {
       throw Exception('Failed to unlike post: $e');
@@ -415,10 +431,9 @@ class CommunityService {
 
   Future<Map<String, int>> getCommentLikeCounts(List<String> commentIds) async {
     try {
-      Map<String, int> likeCounts = {};
-      for (final id in commentIds) {
-        likeCounts[id] = 0;
-      }
+      final Map<String, int> likeCounts = {
+        for (final id in commentIds) id: 0,
+      };
 
       if (commentIds.isEmpty) return likeCounts;
 
@@ -431,6 +446,7 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
+
         for (final like in likes) {
           final commentId = like['commentId'];
           if (likeCounts.containsKey(commentId)) {
@@ -447,10 +463,9 @@ class CommunityService {
 
   Future<Map<String, int>> getPostLikeCounts(List<String> postIds) async {
     try {
-      Map<String, int> likeCounts = {};
-      for (final id in postIds) {
-        likeCounts[id] = 0;
-      }
+      final Map<String, int> likeCounts = {
+        for (final id in postIds) id: 0,
+      };
 
       if (postIds.isEmpty) return likeCounts;
 
@@ -463,6 +478,7 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final likes = response['documents'] as List;
+
         for (final like in likes) {
           final postId = like['postId'];
           if (likeCounts.containsKey(postId)) {
@@ -479,10 +495,9 @@ class CommunityService {
 
   Future<Map<String, int>> getPostCommentCounts(List<String> postIds) async {
     try {
-      Map<String, int> commentCounts = {};
-      for (final id in postIds) {
-        commentCounts[id] = 0;
-      }
+      final Map<String, int> commentCounts = {
+        for (final id in postIds) id: 0,
+      };
 
       if (postIds.isEmpty) return commentCounts;
 
@@ -495,6 +510,7 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final comments = response['documents'] as List;
+
         for (final comment in comments) {
           final postId = comment['postId'];
           if (commentCounts.containsKey(postId)) {
@@ -520,6 +536,7 @@ class CommunityService {
 
       if (response.containsKey('documents') && response['documents'] is List) {
         final documents = response['documents'] as List;
+
         return documents
             .map((doc) {
               try {

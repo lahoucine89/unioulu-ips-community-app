@@ -22,18 +22,23 @@ const UserModelSchema = CollectionSchema(
       name: r'email',
       type: IsarType.string,
     ),
-    r'labels': PropertySchema(
+    r'emailVerified': PropertySchema(
       id: 1,
+      name: r'emailVerified',
+      type: IsarType.bool,
+    ),
+    r'labels': PropertySchema(
+      id: 2,
       name: r'labels',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'userId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'userId',
       type: IsarType.string,
     )
@@ -72,9 +77,10 @@ void _userModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.email);
-  writer.writeString(offsets[1], object.labels);
-  writer.writeString(offsets[2], object.name);
-  writer.writeString(offsets[3], object.userId);
+  writer.writeBool(offsets[1], object.emailVerified);
+  writer.writeString(offsets[2], object.labels);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.userId);
 }
 
 UserModel _userModelDeserialize(
@@ -85,9 +91,10 @@ UserModel _userModelDeserialize(
 ) {
   final object = UserModel(
     email: reader.readString(offsets[0]),
-    labels: reader.readString(offsets[1]),
-    name: reader.readString(offsets[2]),
-    userId: reader.readString(offsets[3]),
+    emailVerified: reader.readBoolOrNull(offsets[1]) ?? false,
+    labels: reader.readString(offsets[2]),
+    name: reader.readString(offsets[3]),
+    userId: reader.readString(offsets[4]),
   );
   object.id = id;
   return object;
@@ -103,10 +110,12 @@ P _userModelDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -330,6 +339,16 @@ extension UserModelQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'email',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      emailVerifiedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'emailVerified',
+        value: value,
       ));
     });
   }
@@ -797,6 +816,18 @@ extension UserModelQuerySortBy on QueryBuilder<UserModel, UserModel, QSortBy> {
     });
   }
 
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByEmailVerified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emailVerified', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByEmailVerifiedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emailVerified', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByLabels() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'labels', Sort.asc);
@@ -845,6 +876,18 @@ extension UserModelQuerySortThenBy
   QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByEmailDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'email', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByEmailVerified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emailVerified', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByEmailVerifiedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emailVerified', Sort.desc);
     });
   }
 
@@ -906,6 +949,12 @@ extension UserModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByEmailVerified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'emailVerified');
+    });
+  }
+
   QueryBuilder<UserModel, UserModel, QDistinct> distinctByLabels(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -939,6 +988,12 @@ extension UserModelQueryProperty
   QueryBuilder<UserModel, String, QQueryOperations> emailProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'email');
+    });
+  }
+
+  QueryBuilder<UserModel, bool, QQueryOperations> emailVerifiedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'emailVerified');
     });
   }
 

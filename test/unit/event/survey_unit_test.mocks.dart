@@ -176,6 +176,23 @@ class MockAuthRepositoryImpl extends _i1.Mock
       ) as _i7.Future<_i5.User>);
 
   @override
+  _i7.Future<void> confirmVerification(
+    String? userId,
+    String? secret,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #confirmVerification,
+          [
+            userId,
+            secret,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
   _i7.Future<_i5.User> login(
     String? email,
     String? password,

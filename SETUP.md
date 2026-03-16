@@ -211,6 +211,152 @@ flutter run
 
 For further assistance with running or debugging the project, please refer to the official Flutter documentation or check the project's issue tracker on GitHub.
 
+## 5. Local AI Assistant Setup (Ollama)
+
+The project includes a **local AI assistant** that helps users explore:
+
+• events  
+• activities  
+• announcements  
+• community discussions  
+
+The AI **does not manage courses or academic schedules**.
+
+The AI architecture uses:
+
+• Ollama (local LLM)  
+• Python bridge server  
+• Appwrite database data  
+
+---
+
+### Install Ollama
+
+Download Ollama:
+
+https://ollama.com/download
+
+Verify installation:
+
+```bash
+ollama --version
+```
+
+---
+
+### Download the AI Model
+
+Download the lightweight model used in this project:
+
+```bash
+ollama pull qwen3.5:4b
+```
+
+Test the model:
+
+```bash
+ollama run qwen3.5:4b
+```
+
+Exit the model using:
+
+```
+Ctrl + D
+```
+
+---
+
+### Create the AI Environment File
+
+Create a file:
+
+```
+local_ai/.env
+```
+
+Add the following variables:
+
+```env
+APPWRITE_ENDPOINT=http://127.0.0.1/v1
+APPWRITE_PROJECT_ID=your_project_id
+APPWRITE_DATABASE_ID=community
+APPWRITE_API_KEY=your_api_key
+
+OLLAMA_MODEL=qwen3.5:4b
+OLLAMA_URL=http://127.0.0.1:11434/api/chat
+```
+
+Important:
+
+• the API key must stay **server-side only**  
+• never expose it inside Flutter code  
+
+---
+
+### Start the AI Server
+
+Navigate to the AI folder:
+
+```bash
+cd local_ai
+```
+
+Run the server:
+
+```bash
+python ollama_server.py
+```
+
+If successful you should see:
+
+```
+Using Appwrite endpoint: http://127.0.0.1/v1
+Using database: community
+Using Ollama model: qwen3.5:4b
+Local AI server running at http://127.0.0.1:8000
+```
+
+Keep this terminal running.
+
+---
+
+### Test the AI Server
+
+Open another terminal and run:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/chat" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body '{"message":"What activities are available this week?"}'
+```
+
+---
+
+### Chatbot Integration
+
+The chatbot UI is located at:
+
+```
+lib/features/chatbot/chatbot_screen.dart
+```
+
+The chatbot sends requests to:
+
+```
+http://127.0.0.1:8000/chat
+```
+
+Device configuration:
+
+| Device | Address |
+|------|------|
+| Desktop | http://127.0.0.1:8000 |
+| Android Emulator | http://10.0.2.2:8000 |
+| Real Phone | http://YOUR_PC_IP:8000 |
+
 ---
 ## Project Structure
 

@@ -129,8 +129,9 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
   _i7.Future<_i2.CommentModel> addComment(
     String? postId,
     String? text,
-    String? username,
-  ) =>
+    String? username, {
+    String? parentCommentId,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #addComment,
@@ -139,6 +140,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
             text,
             username,
           ],
+          {#parentCommentId: parentCommentId},
         ),
         returnValue: _i7.Future<_i2.CommentModel>.value(_FakeCommentModel_0(
           this,
@@ -149,6 +151,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
               text,
               username,
             ],
+            {#parentCommentId: parentCommentId},
           ),
         )),
         returnValueForMissingStub:
@@ -161,6 +164,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
               text,
               username,
             ],
+            {#parentCommentId: parentCommentId},
           ),
         )),
       ) as _i7.Future<_i2.CommentModel>);
@@ -297,6 +301,18 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
       ) as _i7.Future<Map<String, int>>);
 
   @override
+  _i7.Future<Map<String, int>> getPostCommentCounts(List<String>? postIds) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPostCommentCounts,
+          [postIds],
+        ),
+        returnValue: _i7.Future<Map<String, int>>.value(<String, int>{}),
+        returnValueForMissingStub:
+            _i7.Future<Map<String, int>>.value(<String, int>{}),
+      ) as _i7.Future<Map<String, int>>);
+
+  @override
   _i7.Future<List<_i8.PostModel>> getPostLikes(String? postId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -378,6 +394,23 @@ class MockAuthRepositoryImpl extends _i1.Mock
           ),
         )),
       ) as _i7.Future<_i5.User>);
+
+  @override
+  _i7.Future<void> confirmVerification(
+    String? userId,
+    String? secret,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #confirmVerification,
+          [
+            userId,
+            secret,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   _i7.Future<_i5.User> login(

@@ -129,6 +129,23 @@ class MockAuthRepositoryImpl extends _i1.Mock
       ) as _i7.Future<_i4.User>);
 
   @override
+  _i7.Future<void> confirmVerification(
+    String? userId,
+    String? secret,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #confirmVerification,
+          [
+            userId,
+            secret,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
   _i7.Future<_i4.User> login(
     String? email,
     String? password,
@@ -260,6 +277,27 @@ class MockEventRepository extends _i1.Mock implements _i9.EventRepository {
         returnValue:
             _i7.Future<List<_i10.EventModel>>.value(<_i10.EventModel>[]),
       ) as _i7.Future<List<_i10.EventModel>>);
+
+  @override
+  _i7.Future<List<_i10.EventModel>> getEventsByTopic(String? topicId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getEventsByTopic,
+          [topicId],
+        ),
+        returnValue:
+            _i7.Future<List<_i10.EventModel>>.value(<_i10.EventModel>[]),
+      ) as _i7.Future<List<_i10.EventModel>>);
+
+  @override
+  _i7.Future<Set<String>> getUserLikedEventIds(String? userId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUserLikedEventIds,
+          [userId],
+        ),
+        returnValue: _i7.Future<Set<String>>.value(<String>{}),
+      ) as _i7.Future<Set<String>>);
 
   @override
   _i7.Future<List<_i10.EventModel>> getUserLikedEvents(String? userId) =>

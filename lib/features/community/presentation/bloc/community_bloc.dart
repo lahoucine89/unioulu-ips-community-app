@@ -30,7 +30,9 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   }
 
   Future<void> _onVoteOnPoll(
-      VoteOnPoll event, Emitter<CommunityState> emit) async {
+    VoteOnPoll event,
+    Emitter<CommunityState> emit,
+  ) async {
     if (state is PostLoaded) {
       final currentState = state as PostLoaded;
       final post = currentState.post;
@@ -55,19 +57,26 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           pollOptions: updatedPollOptions,
         );
 
-        emit(PostLoaded(
-          post: updatedPost,
-          comments: currentState.comments,
-        ));
+        emit(
+          PostLoaded(
+            post: updatedPost,
+            comments: currentState.comments,
+          ),
+        );
       } catch (e) {
         emit(
-            CommunityError(message: 'Failed to vote on poll: ${e.toString()}'));
+          CommunityError(
+            message: 'Failed to vote on poll: ${e.toString()}',
+          ),
+        );
       }
     }
   }
 
   Future<void> _onLoadSinglePost(
-      LoadSinglePost event, Emitter<CommunityState> emit) async {
+    LoadSinglePost event,
+    Emitter<CommunityState> emit,
+  ) async {
     emit(CommentsLoading(post: event.post));
 
     try {
@@ -82,35 +91,44 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
 
       final userLikedCommentIds =
           await _communityService.getUserLikedCommentIds(userId);
-      final commentLikecounts = await _communityService
-          .getCommentLikeCounts(comments.map((c) => c.id).toList());
+      final commentLikeCounts = await _communityService.getCommentLikeCounts(
+        comments.map((c) => c.id).toList(),
+      );
 
       for (int i = 0; i < comments.length; i++) {
         if (userLikedCommentIds.contains(comments[i].id)) {
           comments[i] = comments[i].copyWith(isLiked: true);
         }
 
-        if (commentLikecounts.containsKey(comments[i].id)) {
+        if (commentLikeCounts.containsKey(comments[i].id)) {
           comments[i] = comments[i].copyWith(
-            likeCount: commentLikecounts[comments[i].id] ?? 0,
+            likeCount: commentLikeCounts[comments[i].id] ?? 0,
           );
         }
       }
 
-      emit(PostLoaded(
-        post: event.post,
-        comments: comments,
-      ));
+      emit(
+        PostLoaded(
+          post: event.post,
+          comments: comments,
+        ),
+      );
     } catch (e) {
-      emit(CommunityError(message: 'Failed to load comments: ${e.toString()}'));
+      emit(
+        CommunityError(
+          message: 'Failed to load comments: ${e.toString()}',
+        ),
+      );
     }
   }
 
   Future<void> _onAddComment(
-      AddComment event, Emitter<CommunityState> emit) async {
+    AddComment event,
+    Emitter<CommunityState> emit,
+  ) async {
     developer.log(
-        '_onAddComment event received: postId=${event.postId}, text=${event.commentText}');
-    developer.log('Current state: ${state.runtimeType}');
+      '_onAddComment event received: postId=${event.postId}, text=${event.commentText}, parentCommentId=${event.parentCommentId}',
+    );
 
     if (state is PostLoaded || state is CommentsLoading) {
       final post = state is PostLoaded
@@ -122,63 +140,94 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           : <CommentModel>[];
 
       try {
-        developer.log('Attempting to add comment...');
-
         final username = await _authRepository.getCurrentUserName();
-        developer.log('Got username: $username');
+        final userId = await _authRepository.getCurrentUserId();
 
         final comment = await _communityService.addComment(
-            post.id, event.commentText, username);
-
-        developer.log('Comment created successfully: ${comment.id}');
+          post.id,
+          event.commentText,
+          username,
+          userId,
+          parentCommentId: event.parentCommentId,
+        );
 
         final updatedComments = List<CommentModel>.from(currentComments)
           ..add(comment);
 
-        emit(CommentAdded(
-          post: post,
-          comments: updatedComments,
-          message: 'Comment added successfully',
-        ));
-
-        developer.log('CommentAdded state emitted');
+        emit(
+          CommentAdded(
+            post: post,
+            comments: updatedComments,
+            message: event.parentCommentId != null &&
+                    event.parentCommentId!.trim().isNotEmpty
+                ? 'Reply added successfully'
+                : 'Comment added successfully',
+          ),
+        );
 
         final refreshedComments =
             await _communityService.getPostComments(event.postId);
 
-        developer
-            .log('Comments refreshed: ${refreshedComments.length} comments');
+        String currentUserId = 'anonymous';
+        try {
+          currentUserId = await _authRepository.getCurrentUserId();
+        } catch (e) {
+          developer.log('Failed to get current user ID: $e');
+        }
 
-        emit(PostLoaded(
-          post: post,
-          comments: refreshedComments,
-        ));
+        final userLikedCommentIds =
+            await _communityService.getUserLikedCommentIds(currentUserId);
+        final commentLikeCounts = await _communityService.getCommentLikeCounts(
+          refreshedComments.map((c) => c.id).toList(),
+        );
+
+        for (int i = 0; i < refreshedComments.length; i++) {
+          if (userLikedCommentIds.contains(refreshedComments[i].id)) {
+            refreshedComments[i] = refreshedComments[i].copyWith(isLiked: true);
+          }
+
+          if (commentLikeCounts.containsKey(refreshedComments[i].id)) {
+            refreshedComments[i] = refreshedComments[i].copyWith(
+              likeCount: commentLikeCounts[refreshedComments[i].id] ?? 0,
+            );
+          }
+        }
+
+        emit(
+          PostLoaded(
+            post: post,
+            comments: refreshedComments,
+          ),
+        );
       } catch (e, st) {
         developer.log('Error adding comment: $e', error: e, stackTrace: st);
-        emit(CommunityError(message: 'Failed to add comment: ${e.toString()}'));
 
-        final post = state is PostLoaded
-            ? (state as PostLoaded).post
-            : (state as CommentsLoading).post;
-        final currentComments = state is PostLoaded
-            ? (state as PostLoaded).comments
-            : <CommentModel>[];
+        emit(
+          CommunityError(
+            message: 'Failed to add comment: ${e.toString()}',
+          ),
+        );
 
-        emit(PostLoaded(
-          post: post,
-          comments: currentComments,
-        ));
+        emit(
+          PostLoaded(
+            post: post,
+            comments: currentComments,
+          ),
+        );
       }
     } else {
-      developer.log(
-          'ERROR: Cannot add comment - current state is ${state.runtimeType}. Need to load the post first.');
-      emit(CommunityError(
-          message: 'Please load the post first before adding comments'));
+      emit(
+        const CommunityError(
+          message: 'Please load the post first before adding comments',
+        ),
+      );
     }
   }
 
   Future<void> _onLoadComments(
-      LoadComments event, Emitter<CommunityState> emit) async {
+    LoadComments event,
+    Emitter<CommunityState> emit,
+  ) async {
     if (state is PostLoaded || state is CommentsLoading) {
       final post = state is PostLoaded
           ? (state as PostLoaded).post
@@ -198,34 +247,42 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
 
         final userLikedCommentIds =
             await _communityService.getUserLikedCommentIds(userId);
-        final commentLikecounts = await _communityService
-            .getCommentLikeCounts(comments.map((c) => c.id).toList());
+        final commentLikeCounts = await _communityService.getCommentLikeCounts(
+          comments.map((c) => c.id).toList(),
+        );
 
         for (int i = 0; i < comments.length; i++) {
           if (userLikedCommentIds.contains(comments[i].id)) {
             comments[i] = comments[i].copyWith(isLiked: true);
           }
 
-          if (commentLikecounts.containsKey(comments[i].id)) {
+          if (commentLikeCounts.containsKey(comments[i].id)) {
             comments[i] = comments[i].copyWith(
-              likeCount: commentLikecounts[comments[i].id] ?? 0,
+              likeCount: commentLikeCounts[comments[i].id] ?? 0,
             );
           }
         }
 
-        emit(PostLoaded(
-          post: post,
-          comments: comments,
-        ));
+        emit(
+          PostLoaded(
+            post: post,
+            comments: comments,
+          ),
+        );
       } catch (e) {
-        emit(CommunityError(
-            message: 'Failed to load comments: ${e.toString()}'));
+        emit(
+          CommunityError(
+            message: 'Failed to load comments: ${e.toString()}',
+          ),
+        );
       }
     }
   }
 
   Future<void> _onFetchCommunityPosts(
-      FetchCommunityPosts event, Emitter<CommunityState> emit) async {
+    FetchCommunityPosts event,
+    Emitter<CommunityState> emit,
+  ) async {
     emit(CommunityLoading());
 
     try {
@@ -253,26 +310,30 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         }
       }
 
-      emit(CommunityLoaded(
-        posts: posts,
-        likedPosts: likedPostIds,
-      ));
+      emit(
+        CommunityLoaded(
+          posts: posts,
+          likedPosts: likedPostIds,
+        ),
+      );
     } catch (e) {
       emit(CommunityError(message: e.toString()));
     }
   }
 
   Future<void> _onToggleCommentLike(
-      ToggleCommentLike event, Emitter<CommunityState> emit) async {
+    ToggleCommentLike event,
+    Emitter<CommunityState> emit,
+  ) async {
     if (state is! PostLoaded) {
-      emit(CommunityError(message: 'Comments not loaded'));
+      emit(const CommunityError(message: 'Comments not loaded'));
       return;
     }
 
     try {
       final userId = await _authRepository.getCurrentUserId();
       if (userId == 'anonymous') {
-        emit(CommunityError(message: 'Please log in to like comments'));
+        emit(const CommunityError(message: 'Please log in to like comments'));
         return;
       }
 
@@ -282,13 +343,14 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
       final commentIndex = comments.indexWhere((c) => c.id == event.commentId);
 
       if (commentIndex == -1) {
-        emit(CommunityError(message: 'Comment not found'));
+        emit(const CommunityError(message: 'Comment not found'));
         emit(currentState);
         return;
       }
 
       final comment = comments[commentIndex];
       final isLiked = comment.isLiked;
+
       final updatedComments = List<CommentModel>.from(comments);
       updatedComments[commentIndex] = comment.copyWith(
         isLiked: !isLiked,
@@ -301,23 +363,30 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         await _communityService.likeComment(userId, event.commentId);
       }
 
-      emit(PostLoaded(
-        post: post,
-        comments: updatedComments,
-      ));
+      emit(
+        PostLoaded(
+          post: post,
+          comments: updatedComments,
+        ),
+      );
     } catch (e) {
-      emit(CommunityError(
-          message: 'Failed to toggle comment like: ${e.toString()}'));
+      emit(
+        CommunityError(
+          message: 'Failed to toggle comment like: ${e.toString()}',
+        ),
+      );
     }
   }
 
   Future<void> _onTogglePostLike(
-      TogglePostLike event, Emitter<CommunityState> emit) async {
+    TogglePostLike event,
+    Emitter<CommunityState> emit,
+  ) async {
     try {
       final userId = await _authRepository.getCurrentUserId();
 
       if (userId == 'anonymous') {
-        emit(CommunityError(message: 'Please log in to like posts'));
+        emit(const CommunityError(message: 'Please log in to like posts'));
         return;
       }
 
@@ -328,7 +397,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
 
         final postIndex = posts.indexWhere((p) => p.id == event.postId);
         if (postIndex == -1) {
-          emit(CommunityError(message: 'Post not found'));
+          emit(const CommunityError(message: 'Post not found'));
           return;
         }
 
@@ -348,10 +417,12 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           updatedLikedPosts.add(event.postId);
         }
 
-        emit(CommunityLoaded(
-          posts: updatedPosts,
-          likedPosts: updatedLikedPosts,
-        ));
+        emit(
+          CommunityLoaded(
+            posts: updatedPosts,
+            likedPosts: updatedLikedPosts,
+          ),
+        );
 
         if (isLiked) {
           await _communityService.unlikePost(userId, event.postId);
@@ -370,10 +441,12 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           likeCount: post.likeCount + (isLiked ? -1 : 1),
         );
 
-        emit(PostLoaded(
-          post: updatedPost,
-          comments: comments,
-        ));
+        emit(
+          PostLoaded(
+            post: updatedPost,
+            comments: comments,
+          ),
+        );
 
         try {
           if (isLiked) {
@@ -381,22 +454,28 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           } else {
             await _communityService.likePost(userId, event.postId);
           }
-          developer.log('Post like toggled successfully');
         } catch (e) {
-          developer.log('Error toggling post like: $e');
-          emit(PostLoaded(
-            post: post,
-            comments: comments,
-          ));
-          emit(CommunityError(
-              message: 'Failed to update like: ${e.toString()}'));
+          emit(
+            PostLoaded(
+              post: post,
+              comments: comments,
+            ),
+          );
+          emit(
+            CommunityError(
+              message: 'Failed to update like: ${e.toString()}',
+            ),
+          );
         }
       } else {
-        emit(CommunityError(message: 'Post view not loaded'));
+        emit(const CommunityError(message: 'Post view not loaded'));
       }
     } catch (e) {
-      emit(CommunityError(
-          message: 'Failed to toggle post like: ${e.toString()}'));
+      emit(
+        CommunityError(
+          message: 'Failed to toggle post like: ${e.toString()}',
+        ),
+      );
     }
   }
 }

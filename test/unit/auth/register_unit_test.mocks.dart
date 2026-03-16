@@ -692,6 +692,33 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.MfaType>);
 
   @override
+  _i8.Future<_i5.MfaType> createMFAAuthenticator(
+          {required _i14.AuthenticatorType? type}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createMFAAuthenticator,
+          [],
+          {#type: type},
+        ),
+        returnValue: _i8.Future<_i5.MfaType>.value(_FakeMfaType_7(
+          this,
+          Invocation.method(
+            #createMFAAuthenticator,
+            [],
+            {#type: type},
+          ),
+        )),
+        returnValueForMissingStub: _i8.Future<_i5.MfaType>.value(_FakeMfaType_7(
+          this,
+          Invocation.method(
+            #createMFAAuthenticator,
+            [],
+            {#type: type},
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaType>);
+
+  @override
   _i8.Future<_i5.User> updateMfaAuthenticator({
     required _i14.AuthenticatorType? type,
     required String? otp,
@@ -730,11 +757,62 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.User>);
 
   @override
+  _i8.Future<_i5.User> updateMFAAuthenticator({
+    required _i14.AuthenticatorType? type,
+    required String? otp,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateMFAAuthenticator,
+          [],
+          {
+            #type: type,
+            #otp: otp,
+          },
+        ),
+        returnValue: _i8.Future<_i5.User>.value(_FakeUser_3(
+          this,
+          Invocation.method(
+            #updateMFAAuthenticator,
+            [],
+            {
+              #type: type,
+              #otp: otp,
+            },
+          ),
+        )),
+        returnValueForMissingStub: _i8.Future<_i5.User>.value(_FakeUser_3(
+          this,
+          Invocation.method(
+            #updateMFAAuthenticator,
+            [],
+            {
+              #type: type,
+              #otp: otp,
+            },
+          ),
+        )),
+      ) as _i8.Future<_i5.User>);
+
+  @override
   _i8.Future<dynamic> deleteMfaAuthenticator(
           {required _i14.AuthenticatorType? type}) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteMfaAuthenticator,
+          [],
+          {#type: type},
+        ),
+        returnValue: _i8.Future<dynamic>.value(),
+        returnValueForMissingStub: _i8.Future<dynamic>.value(),
+      ) as _i8.Future<dynamic>);
+
+  @override
+  _i8.Future<dynamic> deleteMFAAuthenticator(
+          {required _i14.AuthenticatorType? type}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteMFAAuthenticator,
           [],
           {#type: type},
         ),
@@ -764,6 +842,34 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           this,
           Invocation.method(
             #createMfaChallenge,
+            [],
+            {#factor: factor},
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaChallenge>);
+
+  @override
+  _i8.Future<_i5.MfaChallenge> createMFAChallenge(
+          {required _i14.AuthenticationFactor? factor}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createMFAChallenge,
+          [],
+          {#factor: factor},
+        ),
+        returnValue: _i8.Future<_i5.MfaChallenge>.value(_FakeMfaChallenge_8(
+          this,
+          Invocation.method(
+            #createMFAChallenge,
+            [],
+            {#factor: factor},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i8.Future<_i5.MfaChallenge>.value(_FakeMfaChallenge_8(
+          this,
+          Invocation.method(
+            #createMFAChallenge,
             [],
             {#factor: factor},
           ),
@@ -809,6 +915,44 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.Session>);
 
   @override
+  _i8.Future<_i5.Session> updateMFAChallenge({
+    required String? challengeId,
+    required String? otp,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateMFAChallenge,
+          [],
+          {
+            #challengeId: challengeId,
+            #otp: otp,
+          },
+        ),
+        returnValue: _i8.Future<_i5.Session>.value(_FakeSession_9(
+          this,
+          Invocation.method(
+            #updateMFAChallenge,
+            [],
+            {
+              #challengeId: challengeId,
+              #otp: otp,
+            },
+          ),
+        )),
+        returnValueForMissingStub: _i8.Future<_i5.Session>.value(_FakeSession_9(
+          this,
+          Invocation.method(
+            #updateMFAChallenge,
+            [],
+            {
+              #challengeId: challengeId,
+              #otp: otp,
+            },
+          ),
+        )),
+      ) as _i8.Future<_i5.Session>);
+
+  @override
   _i8.Future<_i5.MfaFactors> listMfaFactors() => (super.noSuchMethod(
         Invocation.method(
           #listMfaFactors,
@@ -826,6 +970,29 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           this,
           Invocation.method(
             #listMfaFactors,
+            [],
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaFactors>);
+
+  @override
+  _i8.Future<_i5.MfaFactors> listMFAFactors() => (super.noSuchMethod(
+        Invocation.method(
+          #listMFAFactors,
+          [],
+        ),
+        returnValue: _i8.Future<_i5.MfaFactors>.value(_FakeMfaFactors_10(
+          this,
+          Invocation.method(
+            #listMFAFactors,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i8.Future<_i5.MfaFactors>.value(_FakeMfaFactors_10(
+          this,
+          Invocation.method(
+            #listMFAFactors,
             [],
           ),
         )),
@@ -850,6 +1017,30 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           this,
           Invocation.method(
             #getMfaRecoveryCodes,
+            [],
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaRecoveryCodes>);
+
+  @override
+  _i8.Future<_i5.MfaRecoveryCodes> getMFARecoveryCodes() => (super.noSuchMethod(
+        Invocation.method(
+          #getMFARecoveryCodes,
+          [],
+        ),
+        returnValue:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #getMFARecoveryCodes,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #getMFARecoveryCodes,
             [],
           ),
         )),
@@ -881,6 +1072,31 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.MfaRecoveryCodes>);
 
   @override
+  _i8.Future<_i5.MfaRecoveryCodes> createMFARecoveryCodes() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createMFARecoveryCodes,
+          [],
+        ),
+        returnValue:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #createMFARecoveryCodes,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #createMFARecoveryCodes,
+            [],
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaRecoveryCodes>);
+
+  @override
   _i8.Future<_i5.MfaRecoveryCodes> updateMfaRecoveryCodes() =>
       (super.noSuchMethod(
         Invocation.method(
@@ -900,6 +1116,31 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           this,
           Invocation.method(
             #updateMfaRecoveryCodes,
+            [],
+          ),
+        )),
+      ) as _i8.Future<_i5.MfaRecoveryCodes>);
+
+  @override
+  _i8.Future<_i5.MfaRecoveryCodes> updateMFARecoveryCodes() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateMFARecoveryCodes,
+          [],
+        ),
+        returnValue:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #updateMFARecoveryCodes,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i8.Future<_i5.MfaRecoveryCodes>.value(_FakeMfaRecoveryCodes_11(
+          this,
+          Invocation.method(
+            #updateMFARecoveryCodes,
             [],
           ),
         )),
@@ -2072,6 +2313,28 @@ class MockClient extends _i1.Mock implements _i4.Client {
           this,
           Invocation.method(
             #setSession,
+            [value],
+          ),
+        ),
+      ) as _i4.Client);
+
+  @override
+  _i4.Client setDevKey(dynamic value) => (super.noSuchMethod(
+        Invocation.method(
+          #setDevKey,
+          [value],
+        ),
+        returnValue: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setDevKey,
+            [value],
+          ),
+        ),
+        returnValueForMissingStub: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setDevKey,
             [value],
           ),
         ),

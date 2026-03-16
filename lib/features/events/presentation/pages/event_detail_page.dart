@@ -1,13 +1,18 @@
 import 'dart:developer' as developer;
 
+import 'package:community/core/services/http_appwrite_service.dart';
+import 'package:community/core/utils/format_date.dart';
 import 'package:community/core/widgets/custom_button.dart';
 import 'package:community/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:community/features/community/data/models/comment_model.dart';
 import 'package:community/features/events/presentation/bloc/events_bloc.dart';
 import 'package:community/features/events/repository/event_repository.dart';
+import 'package:community/features/events/service/event_comment_service.dart';
 import 'package:community/features/surveys/presentation/pages/survey_intro_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -37,13 +42,44 @@ Future<void> _loadEvents(BuildContext context) async {
   }
 }
 
-class EventDetailsPage extends StatelessWidget {
+class EventDetailsPage extends StatefulWidget {
   final EventModel event;
 
   const EventDetailsPage({
     super.key,
     required this.event,
   });
+
+  @override
+  State<EventDetailsPage> createState() => _EventDetailsPageState();
+}
+
+class _EventDetailsPageState extends State<EventDetailsPage> {
+  late final EventCommentService _eventCommentService;
+  int _commentCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventCommentService = EventCommentService(
+      appwriteService: GetIt.instance<AppwriteService>(),
+    );
+    _loadCommentCount();
+  }
+
+  Future<void> _loadCommentCount() async {
+    final count =
+        await _eventCommentService.getEventCommentCount(widget.event.remoteId);
+    if (mounted) {
+      setState(() {
+        _commentCount = count;
+      });
+    }
+  }
+
+  void _onCommentAdded() {
+    _loadCommentCount();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +94,7 @@ class EventDetailsPage extends StatelessWidget {
         }
       },
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -80,6 +116,7 @@ class EventDetailsPage extends StatelessWidget {
               color: Theme.of(context).scaffoldBackgroundColor,
             ),
             bottom: TabBar(
+              isScrollable: true,
               indicator: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.only(
@@ -91,16 +128,17 @@ class EventDetailsPage extends StatelessWidget {
               labelColor: Theme.of(context).primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
               labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-              tabs: const [
-                Tab(text: 'Info'),
-                Tab(text: 'Ticket'),
-                Tab(text: 'Location'),
+              tabs: [
+                const Tab(text: 'Info'),
+                const Tab(text: 'Ticket'),
+                const Tab(text: 'Location'),
+                Tab(text: 'Comments ($_commentCount)'),
               ],
             ),
           ),
           body: Column(
             children: [
-              EventLayout(event: event),
+              EventLayout(event: widget.event),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: CustomButton(
@@ -110,7 +148,7 @@ class EventDetailsPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            SurveyIntroPage(eventId: event.remoteId),
+                            SurveyIntroPage(eventId: widget.event.remoteId),
                       ),
                     );
                   },
@@ -119,9 +157,14 @@ class EventDetailsPage extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _InfoTab(event: event),
-                    _TicketTab(event: event),
-                    _LocationTab(event: event),
+                    _InfoTab(event: widget.event),
+                    _TicketTab(event: widget.event),
+                    _LocationTab(event: widget.event),
+                    _CommentsTab(
+                      event: widget.event,
+                      service: _eventCommentService,
+                      onCommentAdded: _onCommentAdded,
+                    ),
                   ],
                 ),
               ),
@@ -358,6 +401,261 @@ class _LocationTab extends StatelessWidget {
               style: const TextStyle(fontSize: 13.5),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommentsTab extends StatefulWidget {
+  final EventModel event;
+  final EventCommentService service;
+  final VoidCallback onCommentAdded;
+
+  const _CommentsTab({
+    required this.event,
+    required this.service,
+    required this.onCommentAdded,
+  });
+
+  @override
+  State<_CommentsTab> createState() => _CommentsTabState();
+}
+
+class _CommentsTabState extends State<_CommentsTab> {
+  final TextEditingController _controller = TextEditingController();
+
+  late final AuthRepositoryImpl _authRepository;
+
+  List<CommentModel> _comments = [];
+  bool _isLoading = true;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authRepository = locator<AuthRepositoryImpl>();
+    _loadComments();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadComments() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final comments =
+          await widget.service.getEventComments(widget.event.remoteId);
+
+      if (mounted) {
+        setState(() {
+          _comments = comments;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load comments: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _submitComment() async {
+    final text = _controller.text.trim();
+
+    if (text.isEmpty || _isSubmitting) return;
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final username = await _authRepository.getCurrentUserName();
+
+      await widget.service.addEventComment(
+        eventId: widget.event.remoteId,
+        text: text,
+        username: username,
+      );
+
+      _controller.clear();
+      await _loadComments();
+      widget.onCommentAdded();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment added')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add comment: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildComposer(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Join the discussion',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _controller,
+            maxLines: 3,
+            minLines: 2,
+            decoration: InputDecoration(
+              hintText: 'Write your comment about this event...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.all(12),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton.icon(
+              onPressed: _isSubmitting ? null : _submitComment,
+              icon: _isSubmitting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.send),
+              label: Text(_isSubmitting ? 'Posting...' : 'Post comment'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentCard(CommentModel comment) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                child: Text(
+                  comment.username.isNotEmpty
+                      ? comment.username[0].toUpperCase()
+                      : '?',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      comment.username,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      formatDateTime(comment.dateTime),
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            comment.text,
+            style: const TextStyle(fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: _loadComments,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildComposer(context),
+          const SizedBox(height: 16),
+          Text(
+            'Comments (${_comments.length})',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 12),
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 32),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_comments.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Text(
+                'No comments yet. Be the first to comment on this event.',
+              ),
+            )
+          else
+            ..._comments.map(_buildCommentCard),
         ],
       ),
     );

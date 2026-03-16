@@ -9,9 +9,9 @@ abstract class CommunityEvent extends Equatable {
 
 class LoadSinglePost extends CommunityEvent {
   final PostModel post;
-  
+
   const LoadSinglePost({required this.post});
-  
+
   @override
   List<Object> get props => [post];
 }
@@ -19,21 +19,23 @@ class LoadSinglePost extends CommunityEvent {
 class AddComment extends CommunityEvent {
   final String postId;
   final String commentText;
-  
+  final String? parentCommentId;
+
   const AddComment({
     required this.postId,
     required this.commentText,
+    this.parentCommentId,
   });
-  
+
   @override
-  List<Object> get props => [postId, commentText];
+  List<Object?> get props => [postId, commentText, parentCommentId];
 }
 
 class LoadComments extends CommunityEvent {
   final String postId;
-  
+
   const LoadComments({required this.postId});
-  
+
   @override
   List<Object> get props => [postId];
 }
