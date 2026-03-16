@@ -30,45 +30,67 @@ class CommunityService {
       final document = (response['documents'] as List).first;
       final rawPollOptions = document['pollOptions'];
 
-      List<dynamic> pollOptions = [];
+      List<Map<String, dynamic>> pollOptions = [];
 
       if (rawPollOptions is String && rawPollOptions.isNotEmpty) {
-        final decoded = jsonDecode(rawPollOptions);
-        if (decoded is List) {
-          pollOptions = List<dynamic>.from(decoded);
-        } else {
-          throw Exception('Invalid poll options format');
+        try {
+          final decoded = jsonDecode(rawPollOptions);
+
+          if (decoded is List) {
+            pollOptions = decoded
+                .map((e) => Map<String, dynamic>.from(e as Map))
+                .toList();
+          } else {
+            throw Exception('Invalid poll options format');
+          }
+        } catch (_) {
+          final parts = rawPollOptions
+              .split(',')
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
+
+          pollOptions = parts
+              .map((option) => {
+                    'option': option,
+                    'votes': 0,
+                  })
+              .toList();
         }
       } else if (rawPollOptions is List) {
-        pollOptions = List<dynamic>.from(rawPollOptions);
+        pollOptions = rawPollOptions
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
       } else {
         throw Exception('Poll options not found in post');
       }
 
+      if (optionIndex < 0 || optionIndex >= pollOptions.length) {
+        throw Exception('Invalid poll option index');
+      }
+
       final updatedPollOptions = pollOptions.asMap().entries.map((entry) {
         final index = entry.key;
-        final option = Map<String, dynamic>.from(entry.value as Map);
+        final option = Map<String, dynamic>.from(entry.value);
 
         if (index == optionIndex) {
-          final currentVotes = (option['votes'] ?? 0) as int;
+          final currentVotes = option['votes'] is int
+              ? option['votes'] as int
+              : int.tryParse(option['votes'].toString()) ?? 0;
+
           option['votes'] = currentVotes + 1;
         }
 
         return option;
       }).toList();
 
-      final updateResponse = await _appwriteService.updateDocument(
+      await _appwriteService.updateDocument(
         collectionId: 'posts',
         documentId: document['\$id'],
         data: {
           'pollOptions': jsonEncode(updatedPollOptions),
         },
       );
-
-      if (updateResponse.statusCode != 200 &&
-          updateResponse.statusCode != 201) {
-        throw Exception('Failed to store vote: ${updateResponse.body}');
-      }
     } catch (e) {
       throw Exception('Failed to vote on poll: $e');
     }
