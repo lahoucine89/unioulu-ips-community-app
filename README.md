@@ -51,8 +51,8 @@ Appwrite is used for backend services such as data storage, user authentication,
 
 ## Testing
 
-- **Unit and widget tests:** `flutter test` (see `test/`)
-- **E2E smoke test (real app on device):** `integration_test/` — see [integration_test/README.md](integration_test/README.md) for what it checks, CI behaviour, and local commands.
+- **Unit / widget:** `flutter test` — `test/`
+- **E2E (device):** `integration_test/` — [integration_test/README.md](integration_test/README.md)
 
 ## Contributing
 
