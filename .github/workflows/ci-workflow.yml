@@ -24,8 +24,8 @@ jobs:
                   echo "APPWRITE_URL=http://localhost/v1" >> .env
             - uses: subosito/flutter-action@v2
               with:
+                  channel: stable
                   cache: true
-                  flutter-version: 3.24.0
             - run: flutter pub get
             - run: flutter pub run build_runner build --delete-conflicting-outputs
             - run: flutter test
@@ -44,8 +44,8 @@ jobs:
                   echo "APPWRITE_URL=http://localhost/v1" >> appwrite/.env
             - uses: subosito/flutter-action@v2
               with:
+                  channel: stable
                   cache: true
-                  flutter-version: 3.24.0
             - run: flutter config --enable-macos-desktop
             - run: flutter pub get
             - run: flutter pub run build_runner build --delete-conflicting-outputs
