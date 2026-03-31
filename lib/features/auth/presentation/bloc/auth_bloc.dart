@@ -1,5 +1,7 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/repositories/auth_repository_impl.dart'
+    show EmailNotVerifiedException;
 import '../../data/models/user_model.dart';
 import '../../domain/usecases/authenticate_anonymous.dart';
 import '../../domain/usecases/login.dart';
@@ -57,16 +59,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await login.execute(event.email, event.password);
       developer.log('Login successful: ${user.name}');
       emit(AuthAuthenticated(user: user, labels: user.labels));
+    } on EmailNotVerifiedException catch (_) {
+      emit(AuthError(
+          message:
+              'Email not verified. Please check your email for verification link.'));
+    } on AppwriteException catch (e) {
+      developer.log(
+          'Login Appwrite error: type=${e.type} code=${e.code} message=${e.message}');
+      final code = e.code;
+      if (code == 401) {
+        emit(AuthError(
+            message: 'Invalid email or password. Please try again.'));
+        return;
+      }
+      final msg = e.message?.trim();
+      emit(AuthError(
+          message: (msg != null && msg.isNotEmpty)
+              ? msg
+              : 'Login failed (code: ${code ?? 'unknown'}). Check Project ID and Appwrite URL in appwrite/.env.'));
     } catch (e) {
       developer.log('Login error: $e');
-      if (e.toString().contains('Email not verified')) {
-        emit(AuthError(
-            message:
-                'Email not verified. Please check your email for verification link.'));
-      } else {
-        emit(
-            AuthError(message: 'Invalid email or password. Please try again.'));
-      }
+      emit(AuthError(message: e.toString()));
     }
   }
 
