@@ -1,9 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Dart
+name: CI
 
 on:
     push:
@@ -11,29 +6,46 @@ on:
     pull_request:
         branches: ["main"]
 
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
 jobs:
     build:
+        name: Unit & widget tests
         runs-on: ubuntu-latest
-
         steps:
-            - name: Clone repository
-              uses: actions/checkout@v4
-
-            - name: Create .env file
-              run: |
+            - uses: actions/checkout@v4
+            - run: |
                   echo "APPWRITE_PROJECT_ID=community-app" >> .env
                   echo "APPWRITE_DATABASE_ID=communitydb" >> .env
                   echo "APPWRITE_API_KEY=placeholder" >> .env
                   echo "APPWRITE_URL=http://localhost/v1" >> .env
-
-            - name: Set up Flutter
-              uses: subosito/flutter-action@v2
+            - uses: subosito/flutter-action@v2
               with:
                   cache: true
                   flutter-version: 3.24.0
             - run: flutter pub get
-            # - run: flutter analyze # Uncomment this line to enable code analysis. It may fail the build if there are issues so use with intent.
             - run: flutter pub run build_runner build --delete-conflicting-outputs
             - run: flutter test
-            # - run: flutter build apk
-            # - run: flutter build appbundle
+
+    e2e:
+        name: E2E (integration_test on macOS)
+        runs-on: macos-latest
+        timeout-minutes: 45
+        steps:
+            - uses: actions/checkout@v4
+            - run: |
+                  mkdir -p appwrite
+                  echo "APPWRITE_PROJECT_ID=community-app" >> appwrite/.env
+                  echo "APPWRITE_DATABASE_ID=communitydb" >> appwrite/.env
+                  echo "APPWRITE_API_KEY=placeholder" >> appwrite/.env
+                  echo "APPWRITE_URL=http://localhost/v1" >> appwrite/.env
+            - uses: subosito/flutter-action@v2
+              with:
+                  cache: true
+                  flutter-version: 3.24.0
+            - run: flutter config --enable-macos-desktop
+            - run: flutter pub get
+            - run: flutter pub run build_runner build --delete-conflicting-outputs
+            - run: flutter test integration_test/app_test.dart -d macos

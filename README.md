@@ -49,6 +49,11 @@ Community post polls allow users to create polls within posts, enabling communit
 #### Appwrite Integration:
 Appwrite is used for backend services such as data storage, user authentication, and API calls. The data for community posts, announcements, and events are securely stored and managed through Appwrite’s database service.
 
+## Testing
+
+- **Unit and widget tests:** `flutter test` (see `test/`)
+- **E2E smoke test (real app on device):** `integration_test/` — see [integration_test/README.md](integration_test/README.md) for what it checks, CI behaviour, and local commands.
+
 ## Contributing
 
 We welcome contributions from the community! To contribute:
