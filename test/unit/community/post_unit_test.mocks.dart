@@ -129,7 +129,8 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
   _i7.Future<_i2.CommentModel> addComment(
     String? postId,
     String? text,
-    String? username, {
+    String? username,
+    String? userId, {
     String? parentCommentId,
   }) =>
       (super.noSuchMethod(
@@ -139,6 +140,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
             postId,
             text,
             username,
+            userId,
           ],
           {#parentCommentId: parentCommentId},
         ),
@@ -150,6 +152,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
               postId,
               text,
               username,
+              userId,
             ],
             {#parentCommentId: parentCommentId},
           ),
@@ -163,6 +166,7 @@ class MockCommunityService extends _i1.Mock implements _i6.CommunityService {
               postId,
               text,
               username,
+              userId,
             ],
             {#parentCommentId: parentCommentId},
           ),

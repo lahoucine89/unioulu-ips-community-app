@@ -35,8 +35,8 @@ void main() {
     when(mockAuthRepository.getCurrentUserId()).thenAnswer((_) async => userId);
     when(mockEventRepository.getEvents())
         .thenAnswer((_) async => events);
-    when(mockEventRepository.getUserLikedEvents(userId))
-        .thenAnswer((_) async => []); // Assuming no favorites for simplicity
+    when(mockEventRepository.getUserLikedEventIds(userId))
+        .thenAnswer((_) async => <String>{});
 
     // Act
     eventsBloc.add(FetchEvents(userId: userId));

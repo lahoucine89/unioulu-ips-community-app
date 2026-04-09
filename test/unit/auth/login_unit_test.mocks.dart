@@ -553,19 +553,28 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.User>);
 
   @override
-  _i8.Future<_i5.IdentityList> listIdentities({List<String>? queries}) =>
+  _i8.Future<_i5.IdentityList> listIdentities({
+    List<String>? queries,
+    bool? total,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #listIdentities,
           [],
-          {#queries: queries},
+          {
+            #queries: queries,
+            #total: total,
+          },
         ),
         returnValue: _i8.Future<_i5.IdentityList>.value(_FakeIdentityList_4(
           this,
           Invocation.method(
             #listIdentities,
             [],
-            {#queries: queries},
+            {
+              #queries: queries,
+              #total: total,
+            },
           ),
         )),
         returnValueForMissingStub:
@@ -574,7 +583,10 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           Invocation.method(
             #listIdentities,
             [],
-            {#queries: queries},
+            {
+              #queries: queries,
+              #total: total,
+            },
           ),
         )),
       ) as _i8.Future<_i5.IdentityList>);
@@ -592,16 +604,18 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<dynamic>);
 
   @override
-  _i8.Future<_i5.Jwt> createJWT() => (super.noSuchMethod(
+  _i8.Future<_i5.Jwt> createJWT({int? duration}) => (super.noSuchMethod(
         Invocation.method(
           #createJWT,
           [],
+          {#duration: duration},
         ),
         returnValue: _i8.Future<_i5.Jwt>.value(_FakeJwt_5(
           this,
           Invocation.method(
             #createJWT,
             [],
+            {#duration: duration},
           ),
         )),
         returnValueForMissingStub: _i8.Future<_i5.Jwt>.value(_FakeJwt_5(
@@ -609,24 +623,34 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           Invocation.method(
             #createJWT,
             [],
+            {#duration: duration},
           ),
         )),
       ) as _i8.Future<_i5.Jwt>);
 
   @override
-  _i8.Future<_i5.LogList> listLogs({List<String>? queries}) =>
+  _i8.Future<_i5.LogList> listLogs({
+    List<String>? queries,
+    bool? total,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #listLogs,
           [],
-          {#queries: queries},
+          {
+            #queries: queries,
+            #total: total,
+          },
         ),
         returnValue: _i8.Future<_i5.LogList>.value(_FakeLogList_6(
           this,
           Invocation.method(
             #listLogs,
             [],
-            {#queries: queries},
+            {
+              #queries: queries,
+              #total: total,
+            },
           ),
         )),
         returnValueForMissingStub: _i8.Future<_i5.LogList>.value(_FakeLogList_6(
@@ -634,7 +658,10 @@ class MockAccount extends _i1.Mock implements _i13.Account {
           Invocation.method(
             #listLogs,
             [],
-            {#queries: queries},
+            {
+              #queries: queries,
+              #total: total,
+            },
           ),
         )),
       ) as _i8.Future<_i5.LogList>);
@@ -1933,6 +1960,32 @@ class MockAccount extends _i1.Mock implements _i13.Account {
       ) as _i8.Future<_i5.Token>);
 
   @override
+  _i8.Future<_i5.Token> createEmailVerification({required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createEmailVerification,
+          [],
+          {#url: url},
+        ),
+        returnValue: _i8.Future<_i5.Token>.value(_FakeToken_13(
+          this,
+          Invocation.method(
+            #createEmailVerification,
+            [],
+            {#url: url},
+          ),
+        )),
+        returnValueForMissingStub: _i8.Future<_i5.Token>.value(_FakeToken_13(
+          this,
+          Invocation.method(
+            #createEmailVerification,
+            [],
+            {#url: url},
+          ),
+        )),
+      ) as _i8.Future<_i5.Token>);
+
+  @override
   _i8.Future<_i5.Token> createVerification({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1954,6 +2007,44 @@ class MockAccount extends _i1.Mock implements _i13.Account {
             #createVerification,
             [],
             {#url: url},
+          ),
+        )),
+      ) as _i8.Future<_i5.Token>);
+
+  @override
+  _i8.Future<_i5.Token> updateEmailVerification({
+    required String? userId,
+    required String? secret,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateEmailVerification,
+          [],
+          {
+            #userId: userId,
+            #secret: secret,
+          },
+        ),
+        returnValue: _i8.Future<_i5.Token>.value(_FakeToken_13(
+          this,
+          Invocation.method(
+            #updateEmailVerification,
+            [],
+            {
+              #userId: userId,
+              #secret: secret,
+            },
+          ),
+        )),
+        returnValueForMissingStub: _i8.Future<_i5.Token>.value(_FakeToken_13(
+          this,
+          Invocation.method(
+            #updateEmailVerification,
+            [],
+            {
+              #userId: userId,
+              #secret: secret,
+            },
           ),
         )),
       ) as _i8.Future<_i5.Token>);
@@ -2231,7 +2322,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i4.Client);
 
   @override
-  _i4.Client setProject(dynamic value) => (super.noSuchMethod(
+  _i4.Client setProject(String? value) => (super.noSuchMethod(
         Invocation.method(
           #setProject,
           [value],
@@ -2253,7 +2344,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i4.Client);
 
   @override
-  _i4.Client setJWT(dynamic value) => (super.noSuchMethod(
+  _i4.Client setJWT(String? value) => (super.noSuchMethod(
         Invocation.method(
           #setJWT,
           [value],
@@ -2275,7 +2366,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i4.Client);
 
   @override
-  _i4.Client setLocale(dynamic value) => (super.noSuchMethod(
+  _i4.Client setLocale(String? value) => (super.noSuchMethod(
         Invocation.method(
           #setLocale,
           [value],
@@ -2297,7 +2388,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i4.Client);
 
   @override
-  _i4.Client setSession(dynamic value) => (super.noSuchMethod(
+  _i4.Client setSession(String? value) => (super.noSuchMethod(
         Invocation.method(
           #setSession,
           [value],
@@ -2319,7 +2410,7 @@ class MockClient extends _i1.Mock implements _i4.Client {
       ) as _i4.Client);
 
   @override
-  _i4.Client setDevKey(dynamic value) => (super.noSuchMethod(
+  _i4.Client setDevKey(String? value) => (super.noSuchMethod(
         Invocation.method(
           #setDevKey,
           [value],
@@ -2335,6 +2426,72 @@ class MockClient extends _i1.Mock implements _i4.Client {
           this,
           Invocation.method(
             #setDevKey,
+            [value],
+          ),
+        ),
+      ) as _i4.Client);
+
+  @override
+  _i4.Client setImpersonateUserId(String? value) => (super.noSuchMethod(
+        Invocation.method(
+          #setImpersonateUserId,
+          [value],
+        ),
+        returnValue: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserId,
+            [value],
+          ),
+        ),
+        returnValueForMissingStub: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserId,
+            [value],
+          ),
+        ),
+      ) as _i4.Client);
+
+  @override
+  _i4.Client setImpersonateUserEmail(String? value) => (super.noSuchMethod(
+        Invocation.method(
+          #setImpersonateUserEmail,
+          [value],
+        ),
+        returnValue: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserEmail,
+            [value],
+          ),
+        ),
+        returnValueForMissingStub: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserEmail,
+            [value],
+          ),
+        ),
+      ) as _i4.Client);
+
+  @override
+  _i4.Client setImpersonateUserPhone(String? value) => (super.noSuchMethod(
+        Invocation.method(
+          #setImpersonateUserPhone,
+          [value],
+        ),
+        returnValue: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserPhone,
+            [value],
+          ),
+        ),
+        returnValueForMissingStub: _FakeClient_2(
+          this,
+          Invocation.method(
+            #setImpersonateUserPhone,
             [value],
           ),
         ),

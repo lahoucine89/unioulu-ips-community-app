@@ -72,12 +72,11 @@ void main() {
       // Act
       authBloc.add(LoginEvent(email: 'email', password: 'password'));
 
-      // Assert
-      expectLater(
+      await expectLater(
         authBloc.stream,
         emitsInOrder([
           AuthLoading(),
-          AuthError(message: 'Invalid email or password. Please try again.'),
+          AuthError(message: exception.toString()),
         ]),
       );
     });

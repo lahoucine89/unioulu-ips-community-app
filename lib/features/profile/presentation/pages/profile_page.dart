@@ -1,4 +1,3 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:community/core/widgets/custom_app_bar.dart';
 import 'package:community/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:community/features/auth/presentation/bloc/auth_event.dart';

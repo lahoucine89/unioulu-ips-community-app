@@ -3,10 +3,23 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i10;
 
 import 'package:appwrite/appwrite.dart' as _i2;
-import 'package:bloc/bloc.dart' as _i5;
+import 'package:bloc/bloc.dart' as _i11;
+import 'package:community/features/auth/domain/usecases/authenticate_anonymous.dart'
+    as _i8;
+import 'package:community/features/auth/domain/usecases/login.dart' as _i4;
+import 'package:community/features/auth/domain/usecases/logout.dart' as _i5;
+import 'package:community/features/auth/domain/usecases/register.dart' as _i6;
+import 'package:community/features/auth/domain/usecases/update_profile.dart'
+    as _i7;
+import 'package:community/features/auth/presentation/bloc/auth_bloc.dart'
+    as _i12;
+import 'package:community/features/auth/presentation/bloc/auth_event.dart'
+    as _i13;
+import 'package:community/features/auth/presentation/bloc/auth_state.dart'
+    as _i9;
 import 'package:community/features/more/presentation/bloc/more_bloc.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
@@ -44,6 +57,67 @@ class _FakeMoreState_1 extends _i1.SmartFake implements _i3.MoreState {
         );
 }
 
+class _FakeLogin_2 extends _i1.SmartFake implements _i4.Login {
+  _FakeLogin_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeLogout_3 extends _i1.SmartFake implements _i5.Logout {
+  _FakeLogout_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeRegister_4 extends _i1.SmartFake implements _i6.Register {
+  _FakeRegister_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeUpdateProfile_5 extends _i1.SmartFake implements _i7.UpdateProfile {
+  _FakeUpdateProfile_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeAuthenticateAnonymous_6 extends _i1.SmartFake
+    implements _i8.AuthenticateAnonymous {
+  _FakeAuthenticateAnonymous_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeAuthState_7 extends _i1.SmartFake implements _i9.AuthState {
+  _FakeAuthState_7(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [MoreBloc].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -71,10 +145,10 @@ class MockMoreBloc extends _i1.Mock implements _i3.MoreBloc {
       ) as _i3.MoreState);
 
   @override
-  _i4.Stream<_i3.MoreState> get stream => (super.noSuchMethod(
+  _i10.Stream<_i3.MoreState> get stream => (super.noSuchMethod(
         Invocation.getter(#stream),
-        returnValue: _i4.Stream<_i3.MoreState>.empty(),
-      ) as _i4.Stream<_i3.MoreState>);
+        returnValue: _i10.Stream<_i3.MoreState>.empty(),
+      ) as _i10.Stream<_i3.MoreState>);
 
   @override
   bool get isClosed => (super.noSuchMethod(
@@ -111,8 +185,8 @@ class MockMoreBloc extends _i1.Mock implements _i3.MoreBloc {
 
   @override
   void on<E extends _i3.MoreEvent>(
-    _i5.EventHandler<E, _i3.MoreState>? handler, {
-    _i5.EventTransformer<E>? transformer,
+    _i11.EventHandler<E, _i3.MoreState>? handler, {
+    _i11.EventTransformer<E>? transformer,
   }) =>
       super.noSuchMethod(
         Invocation.method(
@@ -124,7 +198,8 @@ class MockMoreBloc extends _i1.Mock implements _i3.MoreBloc {
       );
 
   @override
-  void onTransition(_i5.Transition<_i3.MoreEvent, _i3.MoreState>? transition) =>
+  void onTransition(
+          _i11.Transition<_i3.MoreEvent, _i3.MoreState>? transition) =>
       super.noSuchMethod(
         Invocation.method(
           #onTransition,
@@ -134,17 +209,240 @@ class MockMoreBloc extends _i1.Mock implements _i3.MoreBloc {
       );
 
   @override
-  _i4.Future<void> close() => (super.noSuchMethod(
+  void onDone(
+    _i3.MoreEvent? event, [
+    Object? error,
+    StackTrace? stackTrace,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onDone,
+          [
+            event,
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i10.Future<void> close() => (super.noSuchMethod(
         Invocation.method(
           #close,
           [],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 
   @override
-  void onChange(_i5.Change<_i3.MoreState>? change) => super.noSuchMethod(
+  void onChange(_i11.Change<_i3.MoreState>? change) => super.noSuchMethod(
+        Invocation.method(
+          #onChange,
+          [change],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void addError(
+    Object? error, [
+    StackTrace? stackTrace,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #addError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onError(
+    Object? error,
+    StackTrace? stackTrace,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+}
+
+/// A class which mocks [AuthBloc].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthBloc extends _i1.Mock implements _i12.AuthBloc {
+  MockAuthBloc() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Login get login => (super.noSuchMethod(
+        Invocation.getter(#login),
+        returnValue: _FakeLogin_2(
+          this,
+          Invocation.getter(#login),
+        ),
+      ) as _i4.Login);
+
+  @override
+  _i5.Logout get logout => (super.noSuchMethod(
+        Invocation.getter(#logout),
+        returnValue: _FakeLogout_3(
+          this,
+          Invocation.getter(#logout),
+        ),
+      ) as _i5.Logout);
+
+  @override
+  _i6.Register get register => (super.noSuchMethod(
+        Invocation.getter(#register),
+        returnValue: _FakeRegister_4(
+          this,
+          Invocation.getter(#register),
+        ),
+      ) as _i6.Register);
+
+  @override
+  _i7.UpdateProfile get updateProfile => (super.noSuchMethod(
+        Invocation.getter(#updateProfile),
+        returnValue: _FakeUpdateProfile_5(
+          this,
+          Invocation.getter(#updateProfile),
+        ),
+      ) as _i7.UpdateProfile);
+
+  @override
+  _i8.AuthenticateAnonymous get authenticateAnonymous => (super.noSuchMethod(
+        Invocation.getter(#authenticateAnonymous),
+        returnValue: _FakeAuthenticateAnonymous_6(
+          this,
+          Invocation.getter(#authenticateAnonymous),
+        ),
+      ) as _i8.AuthenticateAnonymous);
+
+  @override
+  _i2.Account get account => (super.noSuchMethod(
+        Invocation.getter(#account),
+        returnValue: _FakeAccount_0(
+          this,
+          Invocation.getter(#account),
+        ),
+      ) as _i2.Account);
+
+  @override
+  _i9.AuthState get state => (super.noSuchMethod(
+        Invocation.getter(#state),
+        returnValue: _FakeAuthState_7(
+          this,
+          Invocation.getter(#state),
+        ),
+      ) as _i9.AuthState);
+
+  @override
+  _i10.Stream<_i9.AuthState> get stream => (super.noSuchMethod(
+        Invocation.getter(#stream),
+        returnValue: _i10.Stream<_i9.AuthState>.empty(),
+      ) as _i10.Stream<_i9.AuthState>);
+
+  @override
+  bool get isClosed => (super.noSuchMethod(
+        Invocation.getter(#isClosed),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  void add(_i13.AuthEvent? event) => super.noSuchMethod(
+        Invocation.method(
+          #add,
+          [event],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onEvent(_i13.AuthEvent? event) => super.noSuchMethod(
+        Invocation.method(
+          #onEvent,
+          [event],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void emit(_i9.AuthState? state) => super.noSuchMethod(
+        Invocation.method(
+          #emit,
+          [state],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void on<E extends _i13.AuthEvent>(
+    _i11.EventHandler<E, _i9.AuthState>? handler, {
+    _i11.EventTransformer<E>? transformer,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #on,
+          [handler],
+          {#transformer: transformer},
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onTransition(
+          _i11.Transition<_i13.AuthEvent, _i9.AuthState>? transition) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onTransition,
+          [transition],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onDone(
+    _i13.AuthEvent? event, [
+    Object? error,
+    StackTrace? stackTrace,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onDone,
+          [
+            event,
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i10.Future<void> close() => (super.noSuchMethod(
+        Invocation.method(
+          #close,
+          [],
+        ),
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
+
+  @override
+  void onChange(_i11.Change<_i9.AuthState>? change) => super.noSuchMethod(
         Invocation.method(
           #onChange,
           [change],

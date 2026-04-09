@@ -88,8 +88,7 @@ void main() {
       verify(mockRegister.execute('email', 'password', 'name')).called(1);
     });
 
-    test('emits AuthAuthenticated when register succeeds', () async {
-      // Setup successful registration
+    test('emits AuthRegistered when register succeeds', () async {
       when(mockRegister.execute('email', 'password', 'name'))
           .thenAnswer((_) async => User(
                 id: 'user123',
@@ -98,35 +97,22 @@ void main() {
                 labels: ['user'],
               ));
 
-      // Setup successful login that follows registration
-      final mockUser = User(
-        id: 'user123',
-        email: 'email',
-        name: 'name',
-        labels: ['user'],
-      );
-      when(mockLogin.execute('email', 'password'))
-          .thenAnswer((_) async => mockUser);
-
-      // Act
       authBloc.add(RegisterEvent(
         email: 'email',
         password: 'password',
         name: 'name',
       ));
 
-      // Assert
       await expectLater(
         authBloc.stream,
         emitsInOrder([
           AuthLoading(),
-          AuthAuthenticated(user: mockUser, labels: mockUser.labels),
+          AuthRegistered(),
         ]),
       );
 
-      // Verify interactions
       verify(mockRegister.execute('email', 'password', 'name')).called(1);
-      verify(mockLogin.execute('email', 'password')).called(1);
+      verifyNever(mockLogin.execute(any, any));
     });
   });
 }

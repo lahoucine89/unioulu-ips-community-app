@@ -1,7 +1,6 @@
 import 'package:community/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:community/features/surveys/data/response.dart';
 import 'package:community/features/surveys/data/survey.dart';
-import 'package:community/features/surveys/data/survey_submission.dart';
+import 'package:community/features/surveys/data/survey_question.dart';
 import 'package:community/features/surveys/presentation/bloc/survey_bloc.dart';
 import 'package:community/features/surveys/presentation/bloc/survey_event.dart';
 import 'package:community/features/surveys/presentation/bloc/survey_state.dart';
@@ -116,39 +115,53 @@ void main() {
   test(
       'when SubmitSurvey, emits SurveySubmitting, SurveySubmitted when submission succeeds',
       () async {
-    // Arrange
     final surveyId = 'surveyId';
     final eventId = 'eventId';
     final userId = 'userId';
-    final responses = [
-      Response(questionId: 'question1', answer: 'Answer 1'),
-      Response(questionId: 'question2', answer: 'Answer 2'),
-    ];
-    final surveyResponse = SurveySubmission(
-      surveyId: surveyId,
-      userId: userId,
+    final surveyWithQuestion = Survey(
+      id: surveyId,
       eventId: eventId,
-      responses: responses,
+      title: 'Sample Survey',
+      description: 'This is a sample survey',
+      questions: [
+        SurveyQuestion(
+          id: 'question1',
+          questionText: 'Q1',
+          questionType: QuestionType.text,
+        ),
+      ],
     );
 
-    surveyBloc.add(LoadSurvey(eventId: eventId));
     when(mockAuthRepository.getCurrentUserId()).thenAnswer((_) async => userId);
-    when(mockSurveyService.submitSurveyResponse(surveyResponse))
-        .thenAnswer((_) async => {});
     when(mockSurveyService.getSurveyForEvent(eventId))
-        .thenAnswer((_) async => survey);
+        .thenAnswer((_) async => surveyWithQuestion);
+    when(mockSurveyService.submitSurveyResponse(any))
+        .thenAnswer((_) async => {});
 
-    // Act
-    surveyBloc.add(SubmitSurvey(surveyId: surveyId, eventId: eventId));
-
-    // Assert
-    expectLater(
+    surveyBloc.add(LoadSurvey(eventId: eventId));
+    await expectLater(
       surveyBloc.stream,
       emitsInOrder([
         SurveyLoading(),
         isA<SurveyLoaded>(),
+      ]),
+    );
+
+    surveyBloc.add(
+        AnswerQuestion(questionId: 'question1', answer: 'Answer 1'));
+    await expectLater(
+      surveyBloc.stream,
+      emitsInOrder([
+        isA<SurveyLoaded>(),
+      ]),
+    );
+
+    surveyBloc.add(SubmitSurvey(surveyId: surveyId, eventId: eventId));
+    await expectLater(
+      surveyBloc.stream,
+      emitsInOrder([
         SurveySubmitting(),
-        isA <SurveySubmitted>(),
+        isA<SurveySubmitted>(),
       ]),
     );
   });
