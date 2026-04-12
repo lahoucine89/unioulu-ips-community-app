@@ -1,0 +1,122 @@
+[
+  {
+    "id": "survey1q1",
+    "question": "How would you rate the event overall?",
+    "surveyId": "survey1",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey1q2",
+    "question": "How well was the event organized?",
+    "surveyId": "survey1",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey1q3",
+    "question": "How relevant was the content to your studies?",
+    "surveyId": "survey1",
+    "questionType": "multipleChoice",
+    "options": "Very relevant,Somewhat relevant,Not very relevant,Not relevant at all",
+    "isRequired": true
+  },
+  {
+    "id": "survey1q4",
+    "question": "What did you enjoy most about the event?",
+    "surveyId": "survey1",
+    "questionType": "text",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey1q5",
+    "question": "Would you attend similar events in the future?",
+    "surveyId": "survey1",
+    "questionType": "multipleChoice",
+    "options": "Definitely,Probably,Probably not,Definitely not",
+    "isRequired": true
+  },
+  {
+    "id": "survey2q1",
+    "question": "How would you rate the seminar overall?",
+    "surveyId": "survey2",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey2q2",
+    "question": "How would you rate the speaker's knowledge and presentation?",
+    "surveyId": "survey2",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey2q3",
+    "question": "How familiar were you with AI in Healthcare before this seminar?",
+    "surveyId": "survey2",
+    "questionType": "multipleChoice",
+    "options": "Very familiar,Somewhat familiar,Not very familiar,Completely new to me",
+    "isRequired": true
+  },
+  {
+    "id": "survey2q4",
+    "question": "What topic would you like explored in a future seminar?",
+    "surveyId": "survey2",
+    "questionType": "text",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey2q5",
+    "question": "Would you recommend this seminar to a colleague?",
+    "surveyId": "survey2",
+    "questionType": "multipleChoice",
+    "options": "Definitely,Probably,Probably not,Definitely not",
+    "isRequired": true
+  },
+  {
+    "id": "survey3q1",
+    "question": "How would you rate your overall Sports Day experience?",
+    "surveyId": "survey3",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey3q2",
+    "question": "How would you rate the quality of the facilities?",
+    "surveyId": "survey3",
+    "questionType": "rating",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey3q3",
+    "question": "How well was the event organized?",
+    "surveyId": "survey3",
+    "questionType": "multipleChoice",
+    "options": "Very well,Well,Could be better,Poorly organized",
+    "isRequired": true
+  },
+  {
+    "id": "survey3q4",
+    "question": "What would you improve for the next Sports Day?",
+    "surveyId": "survey3",
+    "questionType": "text",
+    "options": "",
+    "isRequired": true
+  },
+  {
+    "id": "survey3q5",
+    "question": "Would you participate in the next Sports Day?",
+    "surveyId": "survey3",
+    "questionType": "multipleChoice",
+    "options": "Definitely,Probably,Probably not,Definitely not",
+    "isRequired": true
+  }
+]

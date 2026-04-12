@@ -23,20 +23,45 @@ class SurveyIntroPage extends StatelessWidget {
         authRepository: locator<AuthRepositoryImpl>(),
       )..add(LoadSurvey(eventId: eventId)),
       child: BlocConsumer<SurveyBloc, SurveyState>(
-        listener: (context, state) {
-          if (state is SurveyError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-            );
-          }
-        },
+        listener: (context, state) {},
         builder: (context, state) {
-          if (state is SurveyLoading) {
+          if (state is SurveyLoading || state is SurveyInitial) {
             return Scaffold(
               appBar: AppBar(
                 title: const Text('Event Survey'),
               ),
               body: const Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is SurveyError) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Event Survey')),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_outline, size: 64, color: Theme.of(context).primaryColor),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No Survey Available',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'There is no survey available for this event yet.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      CustomButton(
+                        text: 'Go Back',
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           } else if (state is SurveyLoaded) {
             final survey = state.survey;

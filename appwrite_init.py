@@ -41,6 +41,7 @@ sample_events = load_json('training_data/sample_events.json')
 sample_comments = load_json('training_data/sample_comments.json')
 sample_announcements = load_json('training_data/sample_announcements.json')
 sample_surveys = load_json('training_data/sample_surveys.json')
+sample_survey_questions = load_json('training_data/sample_survey_questions.json')
 sample_event_likes = load_json('training_data/likes/sample_event_likes.json')
 sample_post_likes = load_json('training_data/likes/sample_post_likes.json')
 sample_comment_likes = load_json('training_data/likes/sample_comment_likes.json')
@@ -207,8 +208,9 @@ if __name__ == "__main__":
         seed_collection("training_data/sample_announcements.json", "announcements")
         seed_collection("training_data/sample_posts.json", "posts")
         seed_collection("training_data/sample_comments.json", "comments")
-    
-        
+        seed_collection("training_data/sample_surveys.json", "surveys")
+        seed_collection("training_data/sample_survey_questions.json", "survey_questions")
+
         # Seed likes
         print("\n=== Seeding likes ===")
         seed_collection("training_data/likes/sample_event_likes.json", "event_likes")

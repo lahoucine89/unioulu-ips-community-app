@@ -14,6 +14,7 @@ import '../../../language/presentation/bloc/language_bloc.dart';
 import '../widgets/add_topic_form.dart';
 import '../widgets/latest_event.dart';
 import '../widgets/topic_list_widget.dart';
+import 'topic_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -388,6 +389,17 @@ class UserContentView extends StatelessWidget {
             TopicListWidget(
               currentLocale: locale,
               appwriteService: service,
+              onTopicSelected: (topic) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TopicPage(
+                      topic: topic,
+                      currentLocale: locale,
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
             const LatestEventsWidget(),

@@ -24,7 +24,9 @@ class SurveyQuestion {
       id: map['\$id'] ?? '',
       questionText: map['question'] ?? '',
       questionType: (map['questionType'] as String?)?.toQuestionType() ?? QuestionType.text,
-      options: List<String>.from(map['options'].split(',') ?? []),
+      options: (map['options'] != null && (map['options'] as String).isNotEmpty)
+          ? (map['options'] as String).split(',')
+          : null,
       isRequired: map['isRequired'] ?? true,
     );
   }

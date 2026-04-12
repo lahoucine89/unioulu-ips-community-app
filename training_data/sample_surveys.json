@@ -1,31 +1,20 @@
 [
   {
     "id": "survey1",
-    "title": "Sample Event Feedback",
-    "description": "We value your feedback! Please fill out this survey to help us improve future events.",
-    "eventId": "event1",
-    "questions": [
-      {
-        "id": "survey1q1",
-        "question": "How would you rate the event overall?",
-        "questionType": "rating",
-        "options": [],
-        "isRequired": true
-      },
-      {
-        "id": "survey1q2",
-        "question": "What did you like most about the event?",
-        "questionType": "text",
-        "options": [],
-        "isRequired": true
-      },
-      {
-        "id": "survey1q3",
-        "question": "Would you recommend this event to a friend?",
-        "questionType": "multipleChoice",
-        "options": "Yes,No,Maybe",
-        "isRequired": true
-      }
-    ]
+    "title": "Event Feedback Survey",
+    "description": "We value your feedback! Please take a moment to share your thoughts and help us improve future events.",
+    "eventId": "event1"
+  },
+  {
+    "id": "survey2",
+    "title": "Research Seminar Feedback",
+    "description": "Thank you for attending! Please share your thoughts on the AI in Healthcare seminar to help us plan better research events.",
+    "eventId": "event2"
+  },
+  {
+    "id": "survey3",
+    "title": "Sports Day Feedback",
+    "description": "We hope you had a great time! Tell us about your experience so we can make the next Sports Day even better.",
+    "eventId": "event3"
   }
 ]

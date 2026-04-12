@@ -30,3 +30,6 @@ doc/api/
 .idea
 
 .venv
+
+# Claude Code local data
+.claude/
