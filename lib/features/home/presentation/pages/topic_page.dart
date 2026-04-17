@@ -1,7 +1,42 @@
 import 'package:community/core/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/topic_model.dart';
+import 'alumni_network_page.dart';
+import 'annual_celebrations_page.dart';
+import 'art_exhibitions_page.dart';
+import 'campus_restaurants_page.dart';
+import 'career_fair_page.dart';
+import 'conferences_seminars_page.dart';
+import 'course_registration_page.dart';
+import 'cv_workshops_page.dart';
+import 'entrepreneurship_page.dart';
+import 'exam_periods_page.dart';
+import 'internship_guide_page.dart';
+import 'international_events_page.dart';
+import 'job_board_page.dart';
+import 'language_cafe_page.dart';
+import 'music_groups_page.dart';
+import 'orientation_week_page.dart';
+import 'peer_tutoring_page.dart';
+import 'publications_journals_page.dart';
+import 'research_assistant_page.dart';
+import 'research_funding_page.dart';
+import 'research_groups_page.dart';
+import 'running_outdoor_page.dart';
+import 'sports_clubs_page.dart';
+import 'sports_tournaments_page.dart';
+import 'student_card_page.dart';
+import 'student_clubs_page.dart';
+import 'student_counselling_page.dart';
+import 'student_housing_page.dart';
+import 'student_theatre_page.dart';
+import 'student_wellbeing_page.dart';
+import 'study_tips_page.dart';
+import 'swimming_winter_sports_page.dart';
+import 'thesis_support_page.dart';
+import 'unisport_facilities_page.dart';
 import 'university_library_page.dart';
+import 'wellness_mindfulness_page.dart';
 
 class TopicPage extends StatelessWidget {
   final TopicModel topic;
@@ -141,6 +176,91 @@ class _TopicInfoCard extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (_) => const UniversityLibraryPage()),
       );
+    } else if (card.navigateTo == 'exam_periods') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ExamPeriodsPage()),
+      );
+    } else if (card.navigateTo == 'peer_tutoring') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PeerTutoringPage()),
+      );
+    } else if (card.navigateTo == 'course_registration') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CourseRegistrationPage()),
+      );
+    } else if (card.navigateTo == 'study_tips') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const StudyTipsPage()),
+      );
+    } else if (card.navigateTo == 'student_counselling') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const StudentCounsellingPage()),
+      );
+    } else if (card.navigateTo == 'student_clubs') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentClubsPage()));
+    } else if (card.navigateTo == 'student_housing') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentHousingPage()));
+    } else if (card.navigateTo == 'campus_restaurants') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const CampusRestaurantsPage()));
+    } else if (card.navigateTo == 'orientation_week') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const OrientationWeekPage()));
+    } else if (card.navigateTo == 'student_card') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentCardPage()));
+    } else if (card.navigateTo == 'student_wellbeing') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentWellbeingPage()));
+    } else if (card.navigateTo == 'unisport_facilities') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const UnisportFacilitiesPage()));
+    } else if (card.navigateTo == 'sports_clubs') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const SportsClubsPage()));
+    } else if (card.navigateTo == 'sports_tournaments') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const SportsTournamentsPage()));
+    } else if (card.navigateTo == 'running_outdoor') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const RunningOutdoorPage()));
+    } else if (card.navigateTo == 'wellness_mindfulness') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const WellnessMindfulnessPage()));
+    } else if (card.navigateTo == 'swimming_winter') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const SwimmingWinterSportsPage()));
+    } else if (card.navigateTo == 'student_theatre') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const StudentTheatrePage()));
+    } else if (card.navigateTo == 'music_groups') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const MusicGroupsPage()));
+    } else if (card.navigateTo == 'international_events') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const InternationalEventsPage()));
+    } else if (card.navigateTo == 'art_exhibitions') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ArtExhibitionsPage()));
+    } else if (card.navigateTo == 'language_cafe') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageCafePage()));
+    } else if (card.navigateTo == 'annual_celebrations') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnualCelebrationsPage()));
+    } else if (card.navigateTo == 'job_board') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const JobBoardPage()));
+    } else if (card.navigateTo == 'career_fair') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const CareerFairPage()));
+    } else if (card.navigateTo == 'cv_workshops') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const CvWorkshopsPage()));
+    } else if (card.navigateTo == 'internship_guide') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const InternshipGuidePage()));
+    } else if (card.navigateTo == 'alumni_network') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const AlumniNetworkPage()));
+    } else if (card.navigateTo == 'entrepreneurship') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const EntrepreneurshipPage()));
+    } else if (card.navigateTo == 'research_groups') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ResearchGroupsPage()));
+    } else if (card.navigateTo == 'thesis_support') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ThesisSupportPage()));
+    } else if (card.navigateTo == 'publications_journals') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const PublicationsJournalsPage()));
+    } else if (card.navigateTo == 'research_funding') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ResearchFundingPage()));
+    } else if (card.navigateTo == 'conferences_seminars') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ConferencesSeminarsPage()));
+    } else if (card.navigateTo == 'research_assistant') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ResearchAssistantPage()));
     }
   }
 
@@ -305,30 +425,35 @@ class _TopicConfig {
         title: 'Exam Periods',
         description:
             'The exam period typically runs at the end of each study period. Check WebOodi or Peppi for your personal exam schedule and registration deadlines.',
+        navigateTo: 'exam_periods',
       ),
       _CardData(
         icon: Icons.people_outline,
         title: 'Peer Tutoring',
         description:
             'Struggling with a course? IPS organises peer tutoring sessions where senior students help you navigate difficult topics.',
+        navigateTo: 'peer_tutoring',
       ),
       _CardData(
         icon: Icons.app_registration_outlined,
         title: 'Course Registration',
         description:
             'Register for courses through the Peppi student portal. Registration windows open at the start of each study period — act fast, popular courses fill quickly.',
+        navigateTo: 'course_registration',
       ),
       _CardData(
         icon: Icons.tips_and_updates_outlined,
         title: 'Study Tips',
         description:
             'Break your study sessions into focused 25-minute blocks (Pomodoro technique), take regular breaks, and form study groups with classmates.',
+        navigateTo: 'study_tips',
       ),
       _CardData(
         icon: Icons.support_agent_outlined,
         title: 'Student Counselling',
         description:
             'The IPS study counsellor can help you plan your degree, choose electives, and navigate any academic challenges. Book an appointment via email.',
+        navigateTo: 'student_counselling',
       ),
     ],
   );
@@ -345,36 +470,42 @@ class _TopicConfig {
         title: 'Student Clubs & Guilds',
         description:
             'Tietokilta is the official guild of IPS students. Join to connect with peers, attend events, and access guild benefits like merchandise and sauna nights.',
+        navigateTo: 'student_clubs',
       ),
       _CardData(
         icon: Icons.home_outlined,
         title: 'Student Housing',
         description:
             'The Student Union of University of Oulu (SYY) offers affordable housing across the city. Apply early — demand is high at the start of each academic year.',
+        navigateTo: 'student_housing',
       ),
       _CardData(
         icon: Icons.restaurant_outlined,
         title: 'Campus Restaurants',
         description:
             'Enjoy subsidised meals at Kerttu, Kastari, and other campus cafeterias with your student card. Lunch is typically served 10:30–13:30 on weekdays.',
+        navigateTo: 'campus_restaurants',
       ),
       _CardData(
         icon: Icons.celebration_outlined,
         title: 'Orientation Week',
         description:
             'New to Oulu? The orientation week (fuksivuosi) is packed with activities to help you settle in, make friends, and learn university life traditions.',
+        navigateTo: 'orientation_week',
       ),
       _CardData(
         icon: Icons.card_membership_outlined,
         title: 'Student Card (Frank)',
         description:
             'Activate your Frank student card to get discounts on transport, culture, and shopping across Finland. The digital version is available in the Frank app.',
+        navigateTo: 'student_card',
       ),
       _CardData(
         icon: Icons.psychology_outlined,
         title: 'Student Wellbeing',
         description:
             'FSHS (Finnish Student Health Service) provides healthcare, mental health support, and dental services for students. Register online to access services.',
+        navigateTo: 'student_wellbeing',
       ),
     ],
   );
@@ -391,36 +522,42 @@ class _TopicConfig {
         title: 'UniSport Facilities',
         description:
             'UniSport offers gyms, swimming pools, group fitness classes, and sports halls across campus. A semester pass is available at a student-friendly price.',
+        navigateTo: 'unisport_facilities',
       ),
       _CardData(
         icon: Icons.sports_basketball_outlined,
         title: 'Sports Clubs',
         description:
             'Join a university sports club — from football and basketball to floorball and badminton. Clubs welcome all skill levels, from beginners to competitive players.',
+        navigateTo: 'sports_clubs',
       ),
       _CardData(
         icon: Icons.emoji_events_outlined,
         title: 'Upcoming Tournaments',
         description:
             'Inter-university tournaments and intramural competitions are held throughout the year. Check the UniSport notice board or ask your guild for the latest schedule.',
+        navigateTo: 'sports_tournaments',
       ),
       _CardData(
         icon: Icons.directions_run_outlined,
         title: 'Running & Outdoor Activities',
         description:
             'Oulu has excellent running and cycling paths year-round. The Oulujoki riverbank route is a favourite — 5 km of scenic riverside trail right by campus.',
+        navigateTo: 'running_outdoor',
       ),
       _CardData(
         icon: Icons.self_improvement_outlined,
         title: 'Wellness & Mindfulness',
         description:
             'UniSport runs weekly yoga and mindfulness classes. These sessions are a great way to relieve study stress and recharge.',
+        navigateTo: 'wellness_mindfulness',
       ),
       _CardData(
         icon: Icons.pool_outlined,
         title: 'Swimming & Winter Sports',
         description:
             'The campus swimming pool is open to students year-round. In winter, nearby slopes and frozen lakes make skiing and ice-skating easily accessible.',
+        navigateTo: 'swimming_winter',
       ),
     ],
   );
@@ -437,36 +574,42 @@ class _TopicConfig {
         title: 'Student Theatre',
         description:
             'The university student theatre puts on several productions each year. Auditions are open to all students — no prior experience needed.',
+        navigateTo: 'student_theatre',
       ),
       _CardData(
         icon: Icons.music_note_outlined,
         title: 'Music Groups',
         description:
             'From the university choir to jazz ensembles, there are multiple student music groups to join or follow. Concerts are held in the Linnanmaa campus hall.',
+        navigateTo: 'music_groups',
       ),
       _CardData(
         icon: Icons.public_outlined,
         title: 'International Student Events',
         description:
             'ESN Oulu (Erasmus Student Network) organises cultural exchange nights, language cafes, and international dinners to celebrate global diversity on campus.',
+        navigateTo: 'international_events',
       ),
       _CardData(
         icon: Icons.brush_outlined,
         title: 'Art Exhibitions',
         description:
             'Student art exhibitions are regularly held in campus hallways and the Tellus Innovation Arena. Keep an eye on the university event calendar for openings.',
+        navigateTo: 'art_exhibitions',
       ),
       _CardData(
         icon: Icons.translate_outlined,
         title: 'Language Café',
         description:
             'Practice Finnish, English, or other languages in a relaxed setting. Language cafés are weekly informal meetups hosted by international student groups.',
+        navigateTo: 'language_cafe',
       ),
       _CardData(
         icon: Icons.festival_outlined,
         title: 'Annual Celebrations',
         description:
             'Don\'t miss Wappu (May Day), the biggest student celebration in Finland, or the traditional guild anniversary parties held throughout the year.',
+        navigateTo: 'annual_celebrations',
       ),
     ],
   );
@@ -483,36 +626,42 @@ class _TopicConfig {
         title: 'Job Board',
         description:
             'Find part-time jobs, internships, and thesis work positions on the University of Oulu career portal and the Tietokilta job board updated weekly.',
+        navigateTo: 'job_board',
       ),
       _CardData(
         icon: Icons.handshake_outlined,
         title: 'Career Fair',
         description:
             'The annual IPS career fair brings together top tech companies and students. It\'s a great chance to network, learn about open roles, and hand in your CV.',
+        navigateTo: 'career_fair',
       ),
       _CardData(
         icon: Icons.description_outlined,
         title: 'CV & Cover Letter Workshops',
         description:
             'The university career services team runs free CV review sessions and cover letter workshops. Book a slot through the career services portal.',
+        navigateTo: 'cv_workshops',
       ),
       _CardData(
         icon: Icons.business_center_outlined,
         title: 'Internship Guide',
         description:
             'Many IPS programmes require a practical training period. Start searching early — the best internships at Nokia, Ericsson, and local tech firms fill up fast.',
+        navigateTo: 'internship_guide',
       ),
       _CardData(
         icon: Icons.people_alt_outlined,
         title: 'Alumni Network',
         description:
             'Connect with IPS alumni through LinkedIn and the university alumni association. Mentoring programmes pair students with experienced professionals.',
+        navigateTo: 'alumni_network',
       ),
       _CardData(
         icon: Icons.lightbulb_outline,
         title: 'Entrepreneurship',
         description:
             'Interested in starting your own company? BusinessOulu and the university\'s Kerttu Saalasti Institute offer startup support, mentoring, and funding opportunities.',
+        navigateTo: 'entrepreneurship',
       ),
     ],
   );
@@ -529,36 +678,42 @@ class _TopicConfig {
         title: 'Research Groups',
         description:
             'IPS hosts world-class research groups including INTERACT, BIOMIMETICS, and UBICOMP. Visit the faculty website to learn about ongoing projects and collaboration opportunities.',
+        navigateTo: 'research_groups',
       ),
       _CardData(
         icon: Icons.school_outlined,
         title: 'Thesis Support',
         description:
             'Writing your bachelor\'s or master\'s thesis? The faculty offers thesis seminars, writing clinics, and one-on-one supervision sessions throughout the year.',
+        navigateTo: 'thesis_support',
       ),
       _CardData(
         icon: Icons.article_outlined,
         title: 'Publications & Journals',
         description:
             'Access IPS research publications through the university repository (Jultika). You can also follow faculty researchers on Google Scholar and ResearchGate.',
+        navigateTo: 'publications_journals',
       ),
       _CardData(
         icon: Icons.monetization_on_outlined,
         title: 'Research Funding',
         description:
             'Look for grants from the Academy of Finland, Business Finland, and EU Horizon programmes. The faculty research office can guide you through the application process.',
+        navigateTo: 'research_funding',
       ),
       _CardData(
         icon: Icons.event_note_outlined,
         title: 'Conferences & Seminars',
         description:
             'IPS regularly hosts and participates in international conferences. Student travel grants are available for presenting papers at relevant academic venues.',
+        navigateTo: 'conferences_seminars',
       ),
       _CardData(
         icon: Icons.work_history_outlined,
         title: 'Research Assistant Positions',
         description:
             'Research assistant (RA) positions within IPS labs are posted on the faculty website and Tietokilta job board. These are great for gaining hands-on research experience.',
+        navigateTo: 'research_assistant',
       ),
     ],
   );
