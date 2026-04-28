@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../bloc/events_bloc.dart';
 import '../bloc/events_state.dart';
 import '../../data/models/event_model.dart';
+import 'create_event_page.dart';
 import 'event_detail_page.dart';
 import 'events_calendar_page.dart';
 
@@ -189,7 +190,13 @@ class _EventsPageState extends State<EventsPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'events_create_event',
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const CreateEventPage(),
+            ),
+          );
+        },
         backgroundColor: primary,
         foregroundColor: Colors.white,
         elevation: 4,
