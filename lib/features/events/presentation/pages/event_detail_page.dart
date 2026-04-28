@@ -720,24 +720,35 @@ class EventLayoutState extends State<EventLayout> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
-                child: Image.network(
-                  widget.event.posterPhotoUrl,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: double.infinity,
-                      height: 200,
-                      color: Colors.grey.shade300,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 48,
+                child: widget.event.posterPhotoUrl.trim().isEmpty
+                    ? Container(
+                        width: double.infinity,
+                        height: 200,
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          size: 48,
+                        ),
+                      )
+                    : Image.network(
+                        widget.event.posterPhotoUrl,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: double.infinity,
+                            height: 200,
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              size: 48,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

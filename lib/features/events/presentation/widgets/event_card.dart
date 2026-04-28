@@ -71,12 +71,37 @@ class EventCard extends StatelessWidget {
                         // Display event image
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            event.posterPhotoUrl,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                          child: event.posterPhotoUrl.trim().isEmpty
+                              ? Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: Colors.grey.shade300,
+                                  alignment: Alignment.center,
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    size: 40,
+                                    color: Colors.black54,
+                                  ),
+                                )
+                              : Image.network(
+                                  event.posterPhotoUrl,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      color: Colors.grey.shade300,
+                                      alignment: Alignment.center,
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 40,
+                                        color: Colors.black54,
+                                      ),
+                                    );
+                                  },
+                                ),
                         ),
                         // Favorite button in top-right corner
                         Positioned(

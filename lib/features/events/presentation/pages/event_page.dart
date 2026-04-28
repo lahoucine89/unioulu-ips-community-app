@@ -190,12 +190,16 @@ class _EventsPageState extends State<EventsPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'events_create_event',
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
+        onPressed: () async {
+          final created = await Navigator.of(context).push<bool>(
+            MaterialPageRoute<bool>(
               builder: (_) => const CreateEventPage(),
             ),
           );
+
+          if (created == true) {
+            _loadEvents();
+          }
         },
         backgroundColor: primary,
         foregroundColor: Colors.white,
@@ -290,7 +294,7 @@ class _EventCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.08),
+              color: theme.colorScheme.primary.withValues(alpha: 0.08),
             ),
             boxShadow: const [
               BoxShadow(

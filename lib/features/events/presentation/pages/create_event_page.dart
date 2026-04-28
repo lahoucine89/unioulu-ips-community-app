@@ -5,6 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'event_preview_page.dart';
+
 /// Event creation 
 class CreateEventPage extends StatefulWidget {
   const CreateEventPage({super.key});
@@ -14,15 +16,17 @@ class CreateEventPage extends StatefulWidget {
 }
 
 class _CreateEventPageState extends State<CreateEventPage> {
-  final _eventNameController = TextEditingController(text: 'Board game night');
-  final _locationController = TextEditingController(
-    text: "Blanket's guild room, University of Oulu",
-  );
+  final _eventNameController = TextEditingController();
+  final _locationController = TextEditingController();
   final _detailsController = TextEditingController();
   final _paidAmountController = TextEditingController();
-  final _feedbackController = TextEditingController(text: 'My feedback!!');
+  final _feedbackController = TextEditingController();
 
-  DateTime? _eventDate = DateTime(2023, 11, 2);
+  DateTime? _eventDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
   TimeOfDay _timeFrom = const TimeOfDay(hour: 20, minute: 0);
   TimeOfDay _timeTo = const TimeOfDay(hour: 23, minute: 0);
 
@@ -69,6 +73,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String _formatTime(TimeOfDay t) {
     final dt = DateTime(0, 1, 1, t.hour, t.minute);
     return DateFormat.jm().format(dt);
+  }
+
+  String _formatPriceLabel() {
+    if (_ticketFree) return 'Free';
+    final raw = _paidAmountController.text.trim().replaceAll(',', '.');
+    if (raw.isEmpty) return '— €';
+    final n = double.tryParse(raw);
+    if (n != null && n.isFinite) {
+      if (n == n.roundToDouble()) {
+        return '${n.toInt()} €';
+      }
+      return '${n.toStringAsFixed(2)} €';
+    }
+    return '$raw €';
   }
 
   InputDecoration _fieldDecoration(
@@ -418,10 +436,35 @@ class _CreateEventPageState extends State<CreateEventPage> {
               width: double.infinity,
               height: 52,
               child: FilledButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Create event — API wiring TBD')),
+                onPressed: () async {
+                  final ticketLabel = _formatPriceLabel();
+
+                  final created = await Navigator.of(context).push<bool>(
+                    MaterialPageRoute<bool>(
+                      builder: (_) => EventPreviewPage(
+                        preview: EventPreviewData(
+                          title: _eventNameController.text.trim(),
+                          location: _locationController.text.trim(),
+                          details: _detailsController.text.trim(),
+                          dateLabel: _formatDate(_eventDate),
+                          fromTimeLabel: _formatTime(_timeFrom),
+                          toTimeLabel: _formatTime(_timeTo),
+                          category: _category,
+                          ticketLabel: ticketLabel,
+                          surveyEnabled: _surveyEnabled,
+                          mcqCount: _mcqCount,
+                          qaCount: _qaCount,
+                          feedbackCount: _feedbackQuestionCount,
+                          image: _pickedImage,
+                        ),
+                      ),
+                    ),
                   );
+
+                  if (!mounted) return;
+                  if (created == true) {
+                    Navigator.of(this.context).pop(true);
+                  }
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: primary,
@@ -565,7 +608,10 @@ class _MainDetailsCard extends StatelessWidget {
           label('Event Name'),
           TextField(
             controller: eventNameController,
-            decoration: fieldDecoration(context),
+            decoration: fieldDecoration(
+              context,
+              hint: 'Board game night',
+            ),
           ),
           const SizedBox(height: 18),
           label('Event Date'),
@@ -653,6 +699,7 @@ class _MainDetailsCard extends StatelessWidget {
             controller: locationController,
             decoration: fieldDecoration(
               context,
+              hint: "Blanko's guild room, University of Oulu",
               suffix: Icon(Icons.location_on_outlined, color: primary, size: 22),
             ),
           ),
@@ -741,7 +788,11 @@ class _PhotoUploadBox extends StatelessWidget {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.photo_camera_outlined, color: Colors.grey.shade600, size: 32),
+                      Icon(
+                        Icons.photo_library_outlined,
+                        color: Colors.grey.shade600,
+                        size: 32,
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         'Photo',
@@ -1142,6 +1193,7 @@ class _EventFeedbackCard extends StatelessWidget {
             minLines: 3,
             maxLines: 5,
             decoration: InputDecoration(
+              hintText: 'My feedback',
               filled: true,
               fillColor: Colors.grey.shade50,
               border: OutlineInputBorder(
