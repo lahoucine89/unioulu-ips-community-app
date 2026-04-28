@@ -158,6 +158,8 @@ class _EventsPageState extends State<EventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Events'),
@@ -185,6 +187,21 @@ class _EventsPageState extends State<EventsPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'events_create_event',
+        onPressed: () {},
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        label: const Text(
+          'Create Event',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: [
           _buildFilters(),
@@ -215,7 +232,7 @@ class _EventsPageState extends State<EventsPage> {
                   return RefreshIndicator(
                     onRefresh: _loadEvents,
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
                       itemCount: events.length,
                       itemBuilder: (context, index) {
                         final event = events[index];
