@@ -70,6 +70,7 @@
         "attributes": [
             {"type": "string", "key": "text", "size": 1024, "required": true},
             {"type": "string", "key": "username", "size": 255, "required": true},
+            {"type": "string", "key": "userId", "size": 255, "required": true},
             {"type": "datetime", "key": "dateTime", "required": true},
             {"type": "string", "key": "postId", "size": 255, "required": true}
         ]

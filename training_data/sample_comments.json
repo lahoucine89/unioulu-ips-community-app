@@ -1,23 +1,82 @@
 [
   {
     "id": "comment1",
-    "text": "Great post about best study spots on campus!",
-    "username": "student2025",
-    "dateTime": "2025-12-03T09:00:00",
+    "text": "The quiet rooms on the library's second floor have been really good for group work too.",
+    "username": "Aino K.",
+    "userId": "seed_user_aino",
+    "dateTime": "2026-05-01T09:15:00",
     "postId": "samplepost1"
   },
   {
     "id": "comment2",
-    "text": "Thanks for sharing this information.",
-    "username": "academicstaff",
-    "dateTime": "2025-12-03T07:00:00",
-    "postId": "samplepost2"
+    "text": "I also recommend Tellus in the mornings. It gets busier after lunch, but before 11 it is perfect.",
+    "username": "Mohamed Ali",
+    "userId": "seed_user_mohamed",
+    "dateTime": "2026-05-01T10:40:00",
+    "postId": "samplepost1"
   },
   {
     "id": "comment3",
-    "text": "5 redbulls a day is all I need.",
-    "username": "edgy_student",
-    "dateTime": "2025-12-04T04:00:00",
+    "text": "Thanks for the tips. Booking study rooms early has saved me during exam weeks.",
+    "username": "Sofia Niemi",
+    "userId": "seed_user_sofia",
+    "dateTime": "2026-05-01T13:05:00",
+    "postId": "samplepost1"
+  },
+  {
+    "id": "comment4",
+    "text": "The part about taking real breaks is so true. Short walks between lectures help more than I expected.",
+    "username": "Daniel R.",
+    "userId": "seed_user_daniel",
+    "dateTime": "2026-05-02T08:30:00",
     "postId": "samplepost2"
+  },
+  {
+    "id": "comment5",
+    "text": "I started blocking two evenings a week for hobbies, and it made my study schedule much easier to keep.",
+    "username": "Emilia S.",
+    "userId": "seed_user_emilia",
+    "dateTime": "2026-05-02T12:20:00",
+    "postId": "samplepost2"
+  },
+  {
+    "id": "comment6",
+    "text": "Would be nice to have a small workshop on time management for first-year students.",
+    "username": "Joonas P.",
+    "userId": "seed_user_joonas",
+    "dateTime": "2026-05-02T16:10:00",
+    "postId": "samplepost2"
+  },
+  {
+    "id": "comment7",
+    "text": "Interesting topic. I would love to hear more about how AI tools are being used in actual university courses.",
+    "username": "Nora Ahmed",
+    "userId": "seed_user_nora",
+    "dateTime": "2026-05-03T09:50:00",
+    "postId": "samplepost3"
+  },
+  {
+    "id": "comment8",
+    "text": "A follow-up session with practical examples from research projects would be useful.",
+    "username": "Kalle Virtanen",
+    "userId": "seed_user_kalle",
+    "dateTime": "2026-05-03T14:35:00",
+    "postId": "samplepost3"
+  },
+  {
+    "id": "comment9",
+    "text": "I voted for hiking, but an outdoor picnic on campus would also be easy for everyone to join.",
+    "username": "Laura M.",
+    "userId": "seed_user_laura",
+    "dateTime": "2026-05-04T11:25:00",
+    "postId": "samplepost4"
+  },
+  {
+    "id": "comment10",
+    "text": "Music festival sounds fun if there is a low-cost ticket option for students.",
+    "username": "Elias H.",
+    "userId": "seed_user_elias",
+    "dateTime": "2026-05-04T18:00:00",
+    "postId": "samplepost4"
   }
 ]
